@@ -1,6 +1,7 @@
 import tkinter as tk
 import csv
 import os
+import configparser
 from datetime import datetime
 from tkinter import ttk
 from tkcalendar import Calendar
@@ -19,14 +20,28 @@ def loadData():
             pass
 
 def saveData():
+    #CSV: current date and current weight
     inputtedDate = cal.get_date()
     inputtedCurrentWeight = weightCurrentInput.get()
     
-    with open("data.csv", "a", newline="") as csvfile:
+    with open("inputdata.csv", "a", newline="") as csvfile:
         writer = csv.writer(csvfile)
         row = (inputtedDate, inputtedCurrentWeight)
         writer.writerow(row)
         csvfile.close()
+    
+    #INI: desired weight and preferred measurement
+    inputtedMeasurement = weightMeasurementInputted.get()
+    desiredWeight = weightDesiredInput.get()
+
+    configuration = {
+        "measurement" : inputtedMeasurement,
+        "desiredWeight" : desiredWeight
+    }
+    config = configparser.ConfigParser()
+    config["Configuration"] = configuration
+    with open("config.ini", "w") as configfile:
+        config.write(configfile)
         
 
 
