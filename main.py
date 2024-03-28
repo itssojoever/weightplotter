@@ -40,7 +40,7 @@ def saveData():
         writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight})
         csvfile.close()
     
-    #INI: desired weight and preferred measurement
+    #INI: target weight and preferred measurement
     inputtedMeasurement = weightMeasurementInputted.get()
     desiredWeight = weightDesiredInput.get()
 
@@ -64,12 +64,12 @@ def verifyFields():
         verification = config["Configuration"]["measurement"]
         desired_weight_verification = config["Configuration"]["desiredweight"]
         if not desired_weight_verification.isdigit():
-            messagebox.showerror(title="Error", message="Please use numbers only for desired weight")
+            messagebox.showerror(title="Error", message="Please use numbers only for target weight")
             weightDesiredInput.delete(0, tk.END)
             configVerified = False
             removeLastEntry("inputdata.csv")
         elif float(desired_weight_verification) <=30:
-            messagebox.showwarning(title="Warning", message="Desired weight cannot be too low!")
+            messagebox.showwarning(title="Warning", message="Target weight cannot be too low!")
             configVerified = False
             removeLastEntry("inputdata.csv")
         if verification in {"kg", "lbs"}:
@@ -106,14 +106,14 @@ def removeLastEntry(csv_file):
             writer.writerows(contents)
 
 def viewPlot():
+    #plt.xkcd()
     plt.style.use("fivethirtyeight")
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
         config.read("config.ini")
         desiredWeight = int(config["Configuration"]["desiredweight"])
         measurement = config["Configuration"]["measurement"]
-        print(measurement)
-        print(desiredWeight)
+
     else:
         pass
     if os.path.isfile("inputdata.csv"):
@@ -130,7 +130,7 @@ def viewPlot():
     plt.figure(figsize=(10, 6))
     plt.subplots_adjust(left=0.1, bottom=0.1)
     plt.plot(date, weight_resampled, label="Current weight")
-    plt.axhline(y=desiredWeight, color="r", linestyle="-", alpha=0.15, label="Desired weight")
+    plt.axhline(y=desiredWeight, color="r", linestyle="-", alpha=0.15, label="Target weight")
     plt.fill_between(date, weight_resampled, desiredWeight,
                      where=(weight_resampled <= desiredWeight), 
                      interpolate=True,
@@ -178,7 +178,7 @@ weightMeasurementInputted.set("Select a measurement")
 weightMeasurementOption = tk.OptionMenu(Frame2, weightMeasurementInputted, *weightoption_list)
 
 #Frame3
-l3 = ttk.Label(Frame3, font="helvetica, 12", text="Input desired weight: ")
+l3 = ttk.Label(Frame3, font="helvetica, 12", text="Input target weight: ")
 weightDesiredInput = ttk.Entry(Frame3, font="helvetica, 12")
 
 #Frame4
