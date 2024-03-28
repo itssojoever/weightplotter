@@ -226,6 +226,19 @@ def removeLastEntry(csv_file):
             writer = csv.writer(editFile)
             writer.writerows(contents)
 
+def removeLastEntryConfirmation(csv_file):
+    msgBoxConfirmation = messagebox.askyesno(title="Are you sure?", message="Are you sure you wish to remove the most recent entry? This cannot be reversed")
+    if msgBoxConfirmation == True:
+        with open(csv_file, "r") as file:
+            reader = csv.reader(file)
+            contents = list(reader)
+            contents.pop()
+            with open(csv_file, 'w', newline='') as editFile:
+                writer = csv.writer(editFile)
+                writer.writerows(contents)
+    else:
+        messagebox.showinfo(title="Cancelled", message="User cancelled: entry was not removed")
+
 def viewPlot():   
     #plt.xkcd()
     plt.style.use("fivethirtyeight")
@@ -327,6 +340,7 @@ weightCurrentInput = ttk.Entry(Frame4, font="helvetica, 12")
 
 #Frame5
 saveButton = ttk.Button(Frame5, text="Save entry", command=lambda: saveData())
+removeLastEntryButton = ttk.Button(Frame5, text="Remove last entry", command=lambda: removeLastEntryConfirmation("inputdata.csv"))
 loadButton = ttk.Button(Frame5, text="Load settings", command=lambda: loadData())
 viewVisualization = ttk.Button(Frame5, text="View visualization", command=lambda: viewPlot())
 openSettingsButton = ttk.Button(Frame5, text="Edit plotting behaviour", command=lambda: openSettings())
@@ -360,9 +374,10 @@ weightCurrentInput.grid(row=0, column=1)
 #Frame5
 Frame5.grid(row=4, column=0)
 saveButton.grid(row=1, column=1)
-loadButton.grid(row=1, column=2)
-viewVisualization.grid(row=1, column=3)
-openSettingsButton.grid(row=1, column=4)
+removeLastEntryButton.grid(row=1, column=2)
+loadButton.grid(row=1, column=3)
+viewVisualization.grid(row=1, column=4)
+openSettingsButton.grid(row=1, column=5)
 
 #Frame6
 Frame6.grid(row=5, column=0)
