@@ -99,18 +99,6 @@ def removeLastEntry(csv_file):
             writer = csv.writer(editFile)
             writer.writerows(contents)
 
-   
-        
-                        
-    # if os.path.isfile("inputdata.csv") and len("inputdata.csv")>1:
-    #     csvExists = 1
-    
-    # if configVerified == 1 and csvExists == 1:
-    #     messagebox.showinfo(title="Saved", message="Data saved successfully")
-    # else:
-    #     messagebox.showerror(title="Error", message="Error: Data not saved")
-
-
 #frames
 Frame1 = ttk.LabelFrame(root)
 Frame2 = ttk.LabelFrame(root)
