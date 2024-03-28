@@ -51,23 +51,29 @@ def saveData():
 
 def verifyFields():
     #config.ini
-    configVerified = 1
+    configVerified = True #There isn't any use for this variable thus far, but it may serve a purpose at some point
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
         config.read("config.ini")
         verification = config["Configuration"]["measurement"]
         desired_weight_verification = config["Configuration"]["desiredweight"]
-        if verification in {"kg", "lbs"} and len(desired_weight_verification)>1:
-           pass
+        if not desired_weight_verification.isdigit():
+            messagebox.showerror(title="Error", message="Please use numbers only for desired weight")
+            weightDesiredInput.delete(0, tk.END)
+            configVerified = False
+            removeLastEntry("inputdata.csv")
+        elif float(desired_weight_verification) <=30:
+            messagebox.showwarning(title="Warning", message="Desired weight cannot be too low!")
+            configVerified = False
+            removeLastEntry("inputdata.csv")
+        if verification in {"kg", "lbs"}:
+            pass
         else:
-            configVerified = 0
             messagebox.showerror(title="Error", message="Please complete all fields")
-    if configVerified == 1:
-        pass
-    else:
-        pass
-    #inputdata.csv
-    inputVerified = 1
+            configVerified = False
+            removeLastEntry("inputdata.csv")
+   
+    inputVerified = True
     if os.path.isfile("inputdata.csv"):
         with open("inputdata.csv", "r") as csv_file:
             reader = csv.DictReader(csv_file)
@@ -78,7 +84,11 @@ def verifyFields():
                         weight_value = float(weight_value)
                     except ValueError:
                         messagebox.showerror(title="Error", message="Please use numbers only for weight")
+                        inputVerified = False
                         removeLastEntry("inputdata.csv")
+
+    if inputVerified == True and configVerified == True:
+        messagebox.showinfo(title="Successful!", message="Data successfully saved")
 
 def removeLastEntry(csv_file):
     with open(csv_file, "r") as file:
