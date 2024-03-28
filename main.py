@@ -20,7 +20,7 @@ defaultSettings = {
     "legendloc" : "upper left",
     "filltoggle" : "enabled",
     "charttitle" : "Weight plot",
-    "upperpadding" : 20,
+    "upperpadding" : 10,
     "lowerpadding" : 10,
     }
 settingsExist = os.path.isfile("plotSettings.ini")
@@ -150,15 +150,16 @@ def saveData():
     #CSV: current date and current weight
     inputtedDate = cal.get_date()
     inputtedCurrentWeight = weightCurrentInput.get()
+    inputtedDailyCalories = dailyCaloriesEntry.get()
 
     columnsExist = os.path.isfile("inputdata.csv")
     
     with open("inputdata.csv", "a", newline="") as csvfile:
-        columns = ["date", "weight"]
+        columns = ["date", "weight", "calories"]
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         if not columnsExist:
             writer.writeheader()
-        writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight})
+        writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight, "calories" : inputtedDailyCalories})
         csvfile.close()
     
     #INI: target weight and preferred measurement
@@ -205,7 +206,7 @@ def verifyFields():
         with open("inputdata.csv", "r") as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                if len(row) == 2:
+                if len(row) == 3:
                     weight_value = row["weight"]
                     try:
                         weight_value = float(weight_value)
@@ -226,7 +227,7 @@ def removeLastEntry(csv_file):
             writer = csv.writer(editFile)
             writer.writerows(contents)
 
-def removeLastEntryConfirmation(csv_file):
+def removeLastEntryConfirmation(csv_file): #Foresee editing this such that the user can pick a specific entry to delete
     msgBoxConfirmation = messagebox.askyesno(title="Are you sure?", message="Are you sure you wish to remove the most recent entry? This cannot be reversed")
     if msgBoxConfirmation == True:
         with open(csv_file, "r") as file:
@@ -264,41 +265,38 @@ def viewPlot():
     else:
         pass
     if os.path.isfile("inputdata.csv"):
-        data = pd.read_csv("inputdata.csv")
+        data = pd.read_csv("inputdata.csv", parse_dates=["date"])
         data["date"] = pd.to_datetime(data["date"])
         data.set_index("date", inplace=True)
         data.sort_index(inplace=True)
-        data_resampled = data.resample("6D").mean()
+        data_resampled = data.resample("D", closed="left").mean()
         date = data_resampled.index
         weight_resampled = data_resampled["weight"]
+        calories_resampled = data_resampled["calories"]
         
     else:
         pass
 
+    fig, ax1 = plt.subplots()
+    ax1.plot(date, weight_resampled, label=f"Weight ({measurement})")
+    ax1.tick_params(axis='y')
 
-    plt.figure(figsize=(10, 6))
-    plt.subplots_adjust(left=0.1, bottom=0.1)
-    plt.plot(date, weight_resampled, label="Current weight")
-    plt.axhline(y=desiredWeight, color="r", linestyle="-", alpha=0.15, label="Target weight")
-    if fillToggle == "enabled":
-        plt.fill_between(date, weight_resampled, desiredWeight,
-                        where=(weight_resampled <= desiredWeight), 
-                        interpolate=True,
-                        alpha=0.25, color="red", label="Below goal")
-    
+    ax2 = ax1.twinx()
+    ax2.plot(date, calories_resampled, color='r', label='Calories')
+    ax2.set_ylabel('Calories')
+    ax2.tick_params(axis='y')
+
+    ax1.set_ylim(min(weight_resampled) - lowerYPadding, max(weight_resampled) + upperYPadding)
+    #calories_ticks = range(0, int(max(calories_resampled)) + 250, 250)
+    #ax2.set_yticks(calories_ticks)
+    ax2.set_ylim(min(calories_resampled) - lowerYPadding*5, max(calories_resampled) + upperYPadding*5)
     if legendToggle == "enabled":
-        plt.legend(loc=legendLoc)
-
-    #upperYPadding=0.1*desiredWeight
-    reformulatedsubYPadding = weight_resampled.min() - lowerYPadding
-    #plt.xticks(rotation=70)
-    plt.ylim(reformulatedsubYPadding, desiredWeight + upperYPadding)
-    plt.xlabel("Date")
-    plt.ylabel(f"Weight in {measurement}")
-    plt.title(chartTitle)
-
-    plt.savefig('weightplot.png')
-    plt.show()
+        fig.legend(loc=legendLoc)
+    ax1.set_xlabel("Date")
+    ax1.set_ylabel(f"Weight in {measurement}")
+    ax1.set_title(chartTitle)
+    fig.subplots_adjust(left=0.1, bottom=0.1)
+    fig.show()
 
 
 #frames
@@ -336,7 +334,9 @@ weightDesiredInput = ttk.Entry(Frame3, font="helvetica, 12")
 
 #Frame4
 l4 = ttk.Label(Frame4, font="Helvetica, 12", text="Input weight: ")
+l5 = ttk.Label(Frame4, font="Helvetica, 12", text="Input daily calories: ")
 weightCurrentInput = ttk.Entry(Frame4, font="helvetica, 12")
+dailyCaloriesEntry = ttk.Entry(Frame4, font="helvetica, 12")
 
 #Frame5
 saveButton = ttk.Button(Frame5, text="Save entry", command=lambda: saveData())
@@ -370,6 +370,8 @@ weightDesiredInput.grid(row=0, column=1)
 Frame4.grid(row=3, column=0)
 l4.grid(row=0, column=0)
 weightCurrentInput.grid(row=0, column=1)
+l5.grid(row=1, column=0)
+dailyCaloriesEntry.grid(row=1, column=1)
 
 #Frame5
 Frame5.grid(row=4, column=0)
@@ -383,8 +385,5 @@ openSettingsButton.grid(row=1, column=5)
 Frame6.grid(row=5, column=0)
 #canvas1.grid(row=0, column=0)
 
-
-
-
-
-root.mainloop()
+if __name__== "__main__":
+    root.mainloop()
