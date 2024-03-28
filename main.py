@@ -23,11 +23,15 @@ def saveData():
     #CSV: current date and current weight
     inputtedDate = cal.get_date()
     inputtedCurrentWeight = weightCurrentInput.get()
+
+    columnsExist = os.path.isfile("inputdata.csv")
     
     with open("inputdata.csv", "a", newline="") as csvfile:
-        writer = csv.writer(csvfile)
-        row = (inputtedDate, inputtedCurrentWeight)
-        writer.writerow(row)
+        columns = ["date", "weight"]
+        writer = csv.DictWriter(csvfile, fieldnames=columns)
+        if not columnsExist:
+            writer.writeheader()
+        writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight})
         csvfile.close()
     
     #INI: desired weight and preferred measurement
@@ -42,9 +46,59 @@ def saveData():
     config["Configuration"] = configuration
     with open("config.ini", "w") as configfile:
         config.write(configfile)
+
+    verifyFields()
+
+def verifyFields():
+    #config.ini
+    configVerified = 1
+    if os.path.isfile("config.ini"):
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+        verification = config["Configuration"]["measurement"]
+        desired_weight_verification = config["Configuration"]["desiredweight"]
+        if verification in {"kg", "lbs"} and len(desired_weight_verification)>1:
+           pass
+        else:
+            configVerified = 0
+            messagebox.showerror(title="Error", message="Please complete all fields")
+    if configVerified == 1:
+        pass
+    else:
+        pass
+    #inputdata.csv
+    inputVerified = 1
+    if os.path.isfile("inputdata.csv"):
+        with open("inputdata.csv", "r") as csv_file:
+            reader = csv.DictReader(csv_file)
+            for row in reader:
+                if len(row) == 2:
+                    weight_value = row["weight"]
+                    try:
+                        weight_value = float(weight_value)
+                    except ValueError:
+                        messagebox.showerror(title="Error", message="Please use numbers only for weight")
+                        removeLastEntry("inputdata.csv")
+
+def removeLastEntry(csv_file):
+    with open(csv_file, "r") as file:
+        reader = csv.reader(file)
+        contents = list(reader)
+        contents.pop()
+        with open(csv_file, 'w', newline='') as editFile:
+            writer = csv.writer(editFile)
+            writer.writerows(contents)
+
+   
         
-
-
+                        
+    # if os.path.isfile("inputdata.csv") and len("inputdata.csv")>1:
+    #     csvExists = 1
+    
+    # if configVerified == 1 and csvExists == 1:
+    #     messagebox.showinfo(title="Saved", message="Data saved successfully")
+    # else:
+    #     messagebox.showerror(title="Error", message="Error: Data not saved")
 
 
 #frames
