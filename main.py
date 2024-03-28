@@ -4,6 +4,7 @@ import os
 import configparser
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.dates import DateFormatter, DayLocator
 from datetime import datetime
 from tkinter import ttk
 from tkcalendar import Calendar
@@ -16,7 +17,10 @@ root.iconname(None)
 
 def loadData():
     if os.path.isfile("config.ini"):
-        pass
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+        weightDesiredInput.insert(0, int(config["Configuration"]["desiredWeight"]))
+        weightMeasurementInputted.set(config["Configuration"]["measurement"])
     else:
         with open("config.ini", "w") as f:
             pass
@@ -114,15 +118,33 @@ def viewPlot():
         pass
     if os.path.isfile("inputdata.csv"):
         data = pd.read_csv("inputdata.csv")
-        date = data["date"]
-        weight = data["weight"]
+        data["date"] = pd.to_datetime(data["date"])
+        data.set_index("date", inplace=True)
+        data.sort_index(inplace=True)
+        data_resampled = data.resample("6D").mean()
+        date = data_resampled.index
+        weight_resampled = data_resampled["weight"]
+        
     else:
         pass
-    plt.plot(date, weight, label="Current weight")
+    plt.figure(figsize=(10, 6))
+    plt.subplots_adjust(left=0.1, bottom=0.1)
+    plt.plot(date, weight_resampled, label="Current weight")
     plt.axhline(y=desiredWeight, color="r", linestyle="-", alpha=0.15, label="Desired weight")
+    plt.fill_between(date, weight_resampled, desiredWeight,
+                     where=(weight_resampled <= desiredWeight), 
+                     interpolate=True,
+                     alpha=0.25, color="red", label="Below goal")
     plt.legend(loc="upper left")
+    upperYPadding=0.1*desiredWeight
+    subYPadding = weight_resampled.min() - 6
+    #plt.xticks(rotation=70)
+    plt.ylim(subYPadding, desiredWeight + upperYPadding)
     plt.xlabel("Date")
     plt.ylabel(f"Weight in {measurement}")
+    plt.title("Weight plotter")
+
+    plt.savefig('weightplot.png')
     plt.show()
 
 
@@ -132,6 +154,7 @@ Frame2 = ttk.LabelFrame(root)
 Frame3 = ttk.LabelFrame(root)
 Frame4 = ttk.LabelFrame(root)
 Frame5 = ttk.LabelFrame(root)
+Frame6 = ttk.LabelFrame(root)
 
 #Calendar function
 currentDate = datetime.now()
@@ -164,8 +187,13 @@ weightCurrentInput = ttk.Entry(Frame4, font="helvetica, 12")
 
 #Frame5
 saveButton = ttk.Button(Frame5, text="Save data", command=lambda: saveData())
-viewVisualization = ttk.Button(Frame5, text="View visualisation", command=lambda: viewPlot())
+loadButton = ttk.Button(Frame5, text="Load data", command=lambda: loadData())
+viewVisualization = ttk.Button(Frame5, text="View visualization", command=lambda: viewPlot())
 
+#Frame6
+#canvas1 = tk.Canvas(Frame6, width=1200, height=300)
+#vizualisation = tk.PhotoImage(file="weightplot.png")
+#canvas1.create_image(600, 20, image=vizualisation)
 #gridding/packing ---------
 
 #Frame1
@@ -191,10 +219,12 @@ weightCurrentInput.grid(row=0, column=1)
 #Frame5
 Frame5.grid(row=4, column=0)
 saveButton.grid(row=1, column=1)
-viewVisualization.grid(row=1, column=2)
+loadButton.grid(row=1, column=2)
+viewVisualization.grid(row=1, column=3)
 
 #Frame6
-
+Frame6.grid(row=5, column=0)
+#canvas1.grid(row=0, column=0)
 
 
 
