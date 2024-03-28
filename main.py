@@ -2,6 +2,8 @@ import tkinter as tk
 import csv
 import os
 import configparser
+import pandas as pd
+from matplotlib import pyplot as plt
 from datetime import datetime
 from tkinter import ttk
 from tkcalendar import Calendar
@@ -99,6 +101,31 @@ def removeLastEntry(csv_file):
             writer = csv.writer(editFile)
             writer.writerows(contents)
 
+def viewPlot():
+    plt.style.use("fivethirtyeight")
+    if os.path.isfile("config.ini"):
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+        desiredWeight = int(config["Configuration"]["desiredweight"])
+        measurement = config["Configuration"]["measurement"]
+        print(measurement)
+        print(desiredWeight)
+    else:
+        pass
+    if os.path.isfile("inputdata.csv"):
+        data = pd.read_csv("inputdata.csv")
+        date = data["date"]
+        weight = data["weight"]
+    else:
+        pass
+    plt.plot(date, weight, label="Current weight")
+    plt.axhline(y=desiredWeight, color="r", linestyle="-", alpha=0.15, label="Desired weight")
+    plt.legend(loc="upper left")
+    plt.xlabel("Date")
+    plt.ylabel(f"Weight in {measurement}")
+    plt.show()
+
+
 #frames
 Frame1 = ttk.LabelFrame(root)
 Frame2 = ttk.LabelFrame(root)
@@ -137,6 +164,7 @@ weightCurrentInput = ttk.Entry(Frame4, font="helvetica, 12")
 
 #Frame5
 saveButton = ttk.Button(Frame5, text="Save data", command=lambda: saveData())
+viewVisualization = ttk.Button(Frame5, text="View visualisation", command=lambda: viewPlot())
 
 #gridding/packing ---------
 
@@ -163,6 +191,10 @@ weightCurrentInput.grid(row=0, column=1)
 #Frame5
 Frame5.grid(row=4, column=0)
 saveButton.grid(row=1, column=1)
+viewVisualization.grid(row=1, column=2)
+
+#Frame6
+
 
 
 
