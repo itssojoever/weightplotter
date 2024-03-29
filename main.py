@@ -3,16 +3,15 @@ import csv
 import os
 import configparser
 import pandas as pd
+import ttkbootstrap as ttk
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter, DayLocator
 from datetime import datetime
-from tkinter import ttk
-from tkcalendar import Calendar
 from tkinter import messagebox
 
 #main
-root = tk.Tk()
-root.geometry("400x400")
+root = ttk.Window(themename="superhero")
+root.geometry("665x400")
 root.title("Weightplotter")
 root.iconname(None)
 defaultSettings = {
@@ -32,7 +31,7 @@ if not settingsExist:
 
 #settings
 def openSettings():
-    settingsWindow = tk.Toplevel(root)
+    settingsWindow = ttk.Toplevel(root)
     settingsWindow.geometry("200x500")
     settingsWindow.title("Settings")
     settingsWindow.iconname(None)
@@ -148,7 +147,7 @@ def loadData():
 
 def saveData():
     #CSV: current date and current weight
-    inputtedDate = cal.get_date()
+    inputtedDate = cal.entry.get()
     inputtedCurrentWeight = weightCurrentInput.get()
     inputtedDailyCalories = dailyCaloriesEntry.get()
 
@@ -299,90 +298,68 @@ def viewPlot():
     fig.show()
 
 
-#frames
+#frames and widgets
 Frame1 = ttk.LabelFrame(root)
 Frame2 = ttk.LabelFrame(root)
-Frame3 = ttk.LabelFrame(root)
-Frame4 = ttk.LabelFrame(root)
-Frame5 = ttk.LabelFrame(root)
-Frame6 = ttk.LabelFrame(root)
 
-#Calendar function
-currentDate = datetime.now()
-currentDay = currentDate.day
-currentMonth = currentDate.month
-currentYear = currentDate.year
+cal = ttk.DateEntry(Frame1, bootstyle="info", startdate=datetime.now(), firstweekday=0)
 
-cal = Calendar(Frame1, selectmode = "day", 
-               year = currentYear, 
-               month = currentMonth, 
-               day = currentDay)
-
-#Frame1
 l1 = ttk.Label(Frame1, font="helvetica, 12", text="Select the date: ")
 
-#Frame2
-l2 = ttk.Label(Frame2, font="helvetica, 12", text="Select weight measurement: ")
+l2 = ttk.Label(Frame1, font="helvetica, 12", text="Select weight measurement: ")
 weightoption_list = ["kg", "lbs"]
 weightMeasurementInputted = tk.StringVar(root)
 weightMeasurementInputted.set("Select a measurement")
-weightMeasurementOption = tk.OptionMenu(Frame2, weightMeasurementInputted, *weightoption_list)
+weightMeasurementOption = tk.OptionMenu(Frame1, weightMeasurementInputted, *weightoption_list)
 
-#Frame3
-l3 = ttk.Label(Frame3, font="helvetica, 12", text="Input target weight: ")
-weightDesiredInput = ttk.Entry(Frame3, font="helvetica, 12")
+l3 = ttk.Label(Frame1, font="helvetica, 12", text="Input target weight: ")
+weightDesiredInput = ttk.Entry(Frame1, font="helvetica, 12")
 
-#Frame4
-l4 = ttk.Label(Frame4, font="Helvetica, 12", text="Input weight: ")
-l5 = ttk.Label(Frame4, font="Helvetica, 12", text="Input daily calories: ")
-weightCurrentInput = ttk.Entry(Frame4, font="helvetica, 12")
-dailyCaloriesEntry = ttk.Entry(Frame4, font="helvetica, 12")
+l4 = ttk.Label(Frame1, font="Helvetica, 12", text="Input weight: ")
+l5 = ttk.Label(Frame1, font="Helvetica, 12", text="Input daily calories: ")
+weightCurrentInput = ttk.Entry(Frame1, font="helvetica, 12")
+dailyCaloriesEntry = ttk.Entry(Frame1, font="helvetica, 12")
 
-#Frame5
-saveButton = ttk.Button(Frame5, text="Save entry", command=lambda: saveData())
-removeLastEntryButton = ttk.Button(Frame5, text="Remove last entry", command=lambda: removeLastEntryConfirmation("inputdata.csv"))
-loadButton = ttk.Button(Frame5, text="Load settings", command=lambda: loadData())
-viewVisualization = ttk.Button(Frame5, text="View visualization", command=lambda: viewPlot())
-openSettingsButton = ttk.Button(Frame5, text="Edit plotting behaviour", command=lambda: openSettings())
+saveButton = ttk.Button(Frame2, text="Save entry", command=lambda: saveData())
+removeLastEntryButton = ttk.Button(Frame2, text="Remove last entry", command=lambda: removeLastEntryConfirmation("inputdata.csv"))
+loadButton = ttk.Button(Frame2, text="Load settings", command=lambda: loadData())
+viewVisualization = ttk.Button(Frame2, text="View visualization", command=lambda: viewPlot())
+openSettingsButton = ttk.Button(Frame2, text="Edit plotting behaviour", command=lambda: openSettings())
+
+
+
+Frame1.grid(row=0, column=0)
+Frame2.grid(row=1, column=0)
+l1.grid(row=0, column=0)
+cal.grid(row=1, column=0)
+
+l2.grid(row=2, column=0)
+weightMeasurementOption.grid(row=3, column=0)
+
+l3.grid(row=4, column=0)
+weightDesiredInput.grid(row=5, column=0)
+
+l4.grid(row=6, column=0)
+weightCurrentInput.grid(row=7, column=0)
+l5.grid(row=8, column=0)
+dailyCaloriesEntry.grid(row=9, column=0)
+
+saveButton.grid(row=0, column=1)
+removeLastEntryButton.grid(row=0, column=2)
+loadButton.grid(row=0, column=3)
+viewVisualization.grid(row=0, column=4)
+openSettingsButton.grid(row=0, column=5)
+
+
+
 
 #Frame6
 #canvas1 = tk.Canvas(Frame6, width=1200, height=300)
 #vizualisation = tk.PhotoImage(file="weightplot.png")
 #canvas1.create_image(600, 20, image=vizualisation)
-#gridding/packing ---------
-
-#Frame1
-Frame1.grid(row=0, column=0)
-l1.grid(row=0, column=0)
-cal.grid(row=0, column=1)
-
-#Frame2
-Frame2.grid(row=1, column=0)
-l2.grid(row=0, column=0)
-weightMeasurementOption.grid(row=0, column=1)
-
-#Frame3
-Frame3.grid(row=2, column=0)
-l3.grid(row=0, column=0)
-weightDesiredInput.grid(row=0, column=1)
-
-#Frame4
-Frame4.grid(row=3, column=0)
-l4.grid(row=0, column=0)
-weightCurrentInput.grid(row=0, column=1)
-l5.grid(row=1, column=0)
-dailyCaloriesEntry.grid(row=1, column=1)
-
-#Frame5
-Frame5.grid(row=4, column=0)
-saveButton.grid(row=1, column=1)
-removeLastEntryButton.grid(row=1, column=2)
-loadButton.grid(row=1, column=3)
-viewVisualization.grid(row=1, column=4)
-openSettingsButton.grid(row=1, column=5)
 
 #Frame6
-Frame6.grid(row=5, column=0)
+#Frame6.grid(row=5, column=0)
 #canvas1.grid(row=0, column=0)
 
 if __name__== "__main__":
