@@ -32,82 +32,68 @@ if not settingsExist:
 #settings
 def openSettings():
     settingsWindow = ttk.Toplevel(root)
-    settingsWindow.geometry("200x500")
+    settingsWindow.geometry("357x478")
     settingsWindow.title("Settings")
     settingsWindow.iconname(None)
 
     #Setting frames
-    settingsFrame1 = ttk.LabelFrame(settingsWindow)
-    settingFrames2 = ttk.LabelFrame(settingsWindow)
-    settingFrames3 = ttk.LabelFrame(settingsWindow)
-    settingFrames4 = ttk.LabelFrame(settingsWindow)
-    settingFrame9999 = ttk.LabelFrame(settingsWindow)
+    settingsFrame0 = ttk.LabelFrame(settingsWindow)
+    settingsFrame1 = ttk.LabelFrame(settingsFrame0)
+    settingsFrame2 = ttk.LabelFrame(settingsFrame0)
+
+    settingsFrame0.grid(row=0, column=0)
+    settingsFrame1.grid(row=0, column=0)
+    settingsFrame2.grid(row=1, column=0)
+
+    #Widgets
+
+    chartTitleLabel1 = ttk.Label(settingsFrame1, font="helvetica, 12", text="Input chart title:")
+    chartTitleEntry1 = ttk.Entry(settingsFrame1, font="helvetica, 12", justify="center")
     
-    
-    #Frame1
-    settingsLabel1 = ttk.Label(settingsFrame1, text="Legend")
+    settingsLabel1 = ttk.Label(settingsFrame2, text="Legend:")
     legendOptionsList1 = ["enabled", "disabled"]
     legendOptionsList2 = ["best", "upper left", 
                           "lower left", "upper right",
                           "upper left", "right",
                           "center left", "center right",
                           "center", "upper center"]
+    
     legendOptionsChoice2 = tk.StringVar(root)
     legendOptionsChoice1 = tk.StringVar(root)
-    legendButton1 = tk.OptionMenu(settingsFrame1, legendOptionsChoice1, *legendOptionsList1)
-    legendButton2 = tk.OptionMenu(settingsFrame1, legendOptionsChoice2, *legendOptionsList2)
 
+    legendButton1 = tk.OptionMenu(settingsFrame2, legendOptionsChoice1, *legendOptionsList1)
+    legendButton2 = tk.OptionMenu(settingsFrame2, legendOptionsChoice2, *legendOptionsList2)
 
-    #Frame2
-    chartTitleLabel1 = ttk.Label(settingFrames2, font="helvetica, 12", text="Input chart title:")
-    chartTitleEntry1 = ttk.Entry(settingFrames2, font="helvetica, 12", justify="center")
-
-    #Frame 3
-    chartFillLabel1 = ttk.Label(settingFrames3, text="Enable or disable the fill between target and current:")
+    chartFillLabel1 = ttk.Label(settingsFrame2, text="Enable or disable the fill between target and current:")
     chartOptionsList1 = ["enabled", "disabled"]
     chartOptionsChoice1 = tk.StringVar(root)
-    chartFillOption1 = tk.OptionMenu(settingFrames3, chartOptionsChoice1, *chartOptionsList1)
+    chartFillOption1 = tk.OptionMenu(settingsFrame2, chartOptionsChoice1, *chartOptionsList1)
 
-    #Frame 4
-    paddingLabel1 = ttk.Label(settingFrames4, text="Change upper padding:")
-    paddingLabel2 = ttk.Label(settingFrames4, text="Change lower padding:")
-    upperPaddingButton1 = ttk.Spinbox(settingFrames4, from_=3, to=100)
-    lowerPaddingButton1 = ttk.Spinbox(settingFrames4, from_=-3, to=-100)
+    paddingLabel1 = ttk.Label(settingsFrame2, text="Change upper padding:")
+    paddingLabel2 = ttk.Label(settingsFrame2, text="Change lower padding:")
+    upperPaddingButton1 = ttk.Spinbox(settingsFrame2, from_=3, to=100)
+    lowerPaddingButton1 = ttk.Spinbox(settingsFrame2, from_=-3, to=-100)
 
-    
-            
-
-    #Frame???
-    saveSettingsButton1 = ttk.Button(settingFrame9999, text="Save settings and close", command=lambda:saveSettings())
+    saveSettingsButton1 = ttk.Button(settingsFrame2, text="Save settings and close", command=lambda:saveSettings())
 
     #Grid
-    #Frame1
-    settingsFrame1.grid(row=0, column=0)
+    
     settingsLabel1.grid(row=0, column=0)
     legendButton1.grid(row=1, column=0)
-    legendButton2.grid(row=2, column=0)
+    legendButton2.grid(row=2, column=0, pady=10)
 
-    #Frame 2
-    settingFrames2.grid(row=0, column=1)
-    chartTitleLabel1.grid(row=0, column=0)
-    chartTitleEntry1.grid(row=1, column=0)
+    chartTitleLabel1.grid(row=3, column=0)
+    chartTitleEntry1.grid(row=4, column=0)
 
-    #Frame 3
-    settingFrames3.grid(row=1, column=0)
-    chartFillLabel1.grid(row=0, column=0)
-    chartFillOption1.grid(row=1, column=0)
+    chartFillLabel1.grid(row=5, column=0)
+    chartFillOption1.grid(row=6, column=0,pady=8)
 
-    #Frame 4
-    settingFrames4.grid(row=2, column=0)
-    paddingLabel1.grid(row=0, column=0)
-    paddingLabel2.grid(row=2, column=0)
-    upperPaddingButton1.grid(row=1, column=0)
-    lowerPaddingButton1.grid(row=3, column=0)
+    paddingLabel1.grid(row=7, column=0)
+    paddingLabel2.grid(row=9, column=0)
+    upperPaddingButton1.grid(row=8, column=0)
+    lowerPaddingButton1.grid(row=10, column=0)
     
-
-    #Frame???
-    settingFrame9999.grid(row=3, column=0)
-    saveSettingsButton1.grid(row=0, column=0)
+    saveSettingsButton1.grid(row=11, column=0, pady=10)
 
     if os.path.isfile("plotSettings.ini"):
         settingsReader = configparser.ConfigParser()
