@@ -4,6 +4,7 @@ import os
 import configparser
 import pandas as pd
 import ttkbootstrap as ttk
+import matplotlib.ticker as ticker
 from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter, DayLocator
 from datetime import datetime
@@ -11,6 +12,8 @@ from tkinter import messagebox
 
 #main
 root = ttk.Window(themename="superhero")
+root.position_center()
+root.resizable(False, False)
 root.geometry("665x400")
 root.title("Weightplotter")
 root.iconname(None)
@@ -32,6 +35,7 @@ if not settingsExist:
 #settings
 def openSettings():
     settingsWindow = ttk.Toplevel(root)
+    settingsWindow.resizable(False, False)
     settingsWindow.geometry("357x478")
     settingsWindow.title("Settings")
     settingsWindow.iconname(None)
@@ -52,7 +56,7 @@ def openSettings():
     
     settingsLabel1 = ttk.Label(settingsFrame2, text="Legend:")
     legendOptionsList1 = ["enabled", "disabled"]
-    legendOptionsList2 = ["best", "upper left", 
+    legendOptionsList2 = ["upper left", 
                           "lower left", "upper right",
                           "upper left", "right",
                           "center left", "center right",
@@ -119,6 +123,7 @@ def openSettings():
                     }
                 settingsEditor["Settings"] = settings
                 settingsEditor.write(settingsFile)
+                settingsWindow.destroy()
 
 
 def loadData():
@@ -227,7 +232,6 @@ def removeLastEntryConfirmation(csv_file): #Foresee editing this such that the u
 
 def viewPlot():   
     #plt.xkcd()
-    plt.style.use("fivethirtyeight")
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
         config.read("config.ini")
@@ -262,9 +266,14 @@ def viewPlot():
     else:
         pass
 
+    plt.style.use("fivethirtyeight")
+
     fig, ax1 = plt.subplots()
+    tick_spacing = 1
     ax1.plot(date, weight_resampled, label=f"Weight ({measurement})")
     ax1.tick_params(axis='y')
+    ax1.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+    plt.axhline(y=desiredWeight, color="g", label="Target weight")
 
     ax2 = ax1.twinx()
     ax2.plot(date, calories_resampled, color='r', label='Calories')
@@ -281,7 +290,9 @@ def viewPlot():
     ax1.set_ylabel(f"Weight in {measurement}")
     ax1.set_title(chartTitle)
     fig.subplots_adjust(left=0.1, bottom=0.1)
+    plt.tight_layout()
     fig.show()
+    
 
 
 #frames and widgets
