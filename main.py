@@ -21,9 +21,10 @@ defaultSettings = {
     "legendtoggle" : "enabled",
     "legendloc" : "upper left",
     "filltoggle" : "enabled",
+    "fillalpha" : 0.25,
     "charttitle" : "Weight plot",
-    "upperpadding" : 10,
-    "lowerpadding" : 10,
+    "upperpadding" : 20,
+    "lowerpadding" : 3,
     }
 settingsExist = os.path.isfile("plotSettings.ini")
 if not settingsExist:
@@ -34,9 +35,30 @@ if not settingsExist:
 
 #settings
 def openSettings():
+
+    def slider(e):
+        fillScaleLabel2.config(text=f"Current opacity: {int(fillScale1.get())}%")
+
+    def saveSettings():
+        if os.path.isfile("plotSettings.ini"):
+            with open("plotSettings.ini", "w") as settingsFile:
+                settingsEditor = configparser.ConfigParser()
+                settings = {
+                    "legendtoggle" : legendOptionsChoice1.get(),
+                    "legendloc" : legendOptionsChoice2.get(),
+                    "filltoggle" : chartOptionsChoice1.get(),
+                    "fillalpha" : int(fillScale1.get()),
+                    "charttitle" : chartTitleEntry1.get(),
+                    "upperpadding" : upperPaddingButton1.get(),
+                    "lowerpadding" : lowerPaddingButton1.get(),
+                    }
+                settingsEditor["Settings"] = settings
+                settingsEditor.write(settingsFile)
+                settingsWindow.destroy()
+
     settingsWindow = ttk.Toplevel(root)
     settingsWindow.resizable(False, False)
-    settingsWindow.geometry("357x478")
+    settingsWindow.geometry("357x545")
     settingsWindow.title("Settings")
     settingsWindow.iconname(None)
 
@@ -72,6 +94,9 @@ def openSettings():
     chartOptionsList1 = ["enabled", "disabled"]
     chartOptionsChoice1 = tk.StringVar(root)
     chartFillOption1 = tk.OptionMenu(settingsFrame2, chartOptionsChoice1, *chartOptionsList1)
+    fillScaleLabel1 = ttk.Label(settingsFrame2, text="Modify the opacity: ")
+    fillScale1 = ttk.Scale(settingsFrame2, length=200, from_=0, to=100, command=slider)
+    fillScaleLabel2 = ttk.Label(settingsFrame2, text="")
 
     paddingLabel1 = ttk.Label(settingsFrame2, text="Change upper padding:")
     paddingLabel2 = ttk.Label(settingsFrame2, text="Change lower padding:")
@@ -91,13 +116,16 @@ def openSettings():
 
     chartFillLabel1.grid(row=5, column=0)
     chartFillOption1.grid(row=6, column=0,pady=8)
+    fillScaleLabel1.grid(row=7, column=0)
+    fillScale1.grid(row=8, column=0)
+    fillScaleLabel2.grid(row=9, column=0)
 
-    paddingLabel1.grid(row=7, column=0)
-    paddingLabel2.grid(row=9, column=0)
-    upperPaddingButton1.grid(row=8, column=0)
-    lowerPaddingButton1.grid(row=10, column=0)
+    paddingLabel1.grid(row=10, column=0)
+    paddingLabel2.grid(row=12, column=0)
+    upperPaddingButton1.grid(row=11, column=0)
+    lowerPaddingButton1.grid(row=13, column=0)
     
-    saveSettingsButton1.grid(row=11, column=0, pady=10)
+    saveSettingsButton1.grid(row=14, column=0, pady=10)
 
     if os.path.isfile("plotSettings.ini"):
         settingsReader = configparser.ConfigParser()
@@ -106,26 +134,16 @@ def openSettings():
         legendOptionsChoice2.set(settingsReader["Settings"]["legendloc"])
         chartTitleEntry1.insert(0, settingsReader["Settings"]["charttitle"])
         chartOptionsChoice1.set(settingsReader["Settings"]["filltoggle"])
+
+        fillAlphaLabelGet = settingsReader.getfloat(section="Settings", option="fillalpha")
+        fillAlphaLabelReformed = int(fillAlphaLabelGet)
+        fillScale1.set(fillAlphaLabelReformed)
+        fillScaleLabel2.config(text=f"Current opacity: {fillAlphaLabelReformed}%")
+
+
         upperPaddingButton1.set(settingsReader["Settings"]["upperpadding"])
         lowerPaddingButton1.set(settingsReader["Settings"]["lowerpadding"])
-
-    def saveSettings():
-        if os.path.isfile("plotSettings.ini"):
-            with open("plotSettings.ini", "w") as settingsFile:
-                settingsEditor = configparser.ConfigParser()
-                settings = {
-                    "legendtoggle" : legendOptionsChoice1.get(),
-                    "legendloc" : legendOptionsChoice2.get(),
-                    "filltoggle" : chartOptionsChoice1.get(),
-                    "charttitle" : chartTitleEntry1.get(),
-                    "upperpadding" : upperPaddingButton1.get(),
-                    "lowerpadding" : lowerPaddingButton1.get(),
-                    }
-                settingsEditor["Settings"] = settings
-                settingsEditor.write(settingsFile)
-                settingsWindow.destroy()
-
-
+        
 def loadData():
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
@@ -247,6 +265,7 @@ def viewPlot():
         chartTitle = settingsReader["Settings"]["charttitle"]
         upperYPadding = int(settingsReader["Settings"]["upperpadding"])
         lowerYPadding = int(settingsReader["Settings"]["lowerpadding"])
+        fillAlpha = int(settingsReader["Settings"]["fillalpha"])
 
                                        
                                     
@@ -270,7 +289,7 @@ def viewPlot():
 
     fig, ax1 = plt.subplots()
     tick_spacing = 1
-    ax1.plot(date, weight_resampled, label=f"Weight ({measurement})")
+    ax1.plot(date, weight_resampled, label=f"Weight ({measurement})", linestyle="dashdot")
     ax1.tick_params(axis='y')
     ax1.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
     plt.axhline(y=desiredWeight, color="g", label="Target weight")
@@ -285,11 +304,14 @@ def viewPlot():
     #ax2.set_yticks(calories_ticks)
     ax2.set_ylim(min(calories_resampled) - lowerYPadding*5, max(calories_resampled) + upperYPadding*5)
     if legendToggle == "enabled":
-        fig.legend(loc=legendLoc)
+        fig.legend(handlelength=3,loc=legendLoc)
     ax1.set_xlabel("Date")
     ax1.set_ylabel(f"Weight in {measurement}")
     ax1.set_title(chartTitle)
     fig.subplots_adjust(left=0.1, bottom=0.1)
+    if fillToggle == "enabled":
+        ax1.fill_between(date, weight_resampled, desiredWeight, where=(weight_resampled <= desiredWeight), 
+                         interpolate=True, color="r", alpha=float(fillAlpha)/100, label="below weight target")
     plt.tight_layout()
     fig.show()
     
