@@ -21,10 +21,11 @@ defaultSettings = {
     "legendtoggle" : "enabled",
     "legendloc" : "upper left",
     "filltoggle" : "enabled",
-    "fillalpha" : 0.25,
+    "fillalpha" : 25,
     "charttitle" : "Weight plot",
     "upperpadding" : 20,
     "lowerpadding" : 3,
+    "linewidth" : 5,
     }
 settingsExist = os.path.isfile("plotSettings.ini")
 if not settingsExist:
@@ -34,7 +35,7 @@ if not settingsExist:
         settingsConfig.write(plotSettingsFile)
 
 #settings
-def openSettings():
+def openSettings(): #Want to add: option to pick display and change line colours. Hex?
 
     def slider(e):
         fillScaleLabel2.config(text=f"Current opacity: {int(fillScale1.get())}%")
@@ -51,32 +52,48 @@ def openSettings():
                     "charttitle" : chartTitleEntry1.get(),
                     "upperpadding" : upperPaddingButton1.get(),
                     "lowerpadding" : lowerPaddingButton1.get(),
+                    "linewidth" : lineWidthSpinbox1.get()
                     }
                 settingsEditor["Settings"] = settings
                 settingsEditor.write(settingsFile)
                 settingsWindow.destroy()
 
     settingsWindow = ttk.Toplevel(root)
-    settingsWindow.resizable(False, False)
-    settingsWindow.geometry("357x545")
+    settingsWindow.resizable(True, True)
+    settingsWindow.geometry("357x720")
     settingsWindow.title("Settings")
     settingsWindow.iconname(None)
 
     #Setting frames
-    settingsFrame0 = ttk.LabelFrame(settingsWindow)
-    settingsFrame1 = ttk.LabelFrame(settingsFrame0)
-    settingsFrame2 = ttk.LabelFrame(settingsFrame0)
+    settingsFrame0 = ttk.LabelFrame(settingsWindow) #Umbrella frame
+    settingsFrame1 = ttk.LabelFrame(settingsFrame0) #Relating to the title
+    settingsFrame2 = ttk.LabelFrame(settingsFrame0) #Relating to the legend
+    settingsFrame3 = ttk.LabelFrame(settingsFrame0) #Relating to the fill
+    settingsFrame4 = ttk.LabelFrame(settingsFrame0) #Relating to the padding
+    settingsFrame5 = ttk.LabelFrame(settingsFrame0) #Relating to lines
+    settingsFrame10 = ttk.LabelFrame(settingsFrame0) #Relating to the padding. No.10 to leave space for further categories should they be added
 
     settingsFrame0.grid(row=0, column=0)
     settingsFrame1.grid(row=0, column=0)
-    settingsFrame2.grid(row=1, column=0)
+
+    settingsFrame2.grid(row=1, column=0, sticky="ew")
+    settingsFrame2.grid_rowconfigure(0, weight=1)
+    settingsFrame2.grid_columnconfigure(0, weight=1)
+
+    settingsFrame3.grid(row=2, column=0)
+    settingsFrame4.grid(row=3, column=0)
+    settingsFrame5.grid(row=4, column=0)
+    settingsFrame10.grid(row=5, column=0)
+
 
     #Widgets
 
     chartTitleLabel1 = ttk.Label(settingsFrame1, font="helvetica, 12", text="Input chart title:")
     chartTitleEntry1 = ttk.Entry(settingsFrame1, font="helvetica, 12", justify="center")
     
-    settingsLabel1 = ttk.Label(settingsFrame2, text="Legend:")
+    legendLabel1 = ttk.Label(settingsFrame2, text="Legend: ")
+    legendLabel2 = ttk.Label(settingsFrame2, text="Choose location: ")
+
     legendOptionsList1 = ["enabled", "disabled"]
     legendOptionsList2 = ["upper left", 
                           "lower left", "upper right",
@@ -90,59 +107,71 @@ def openSettings():
     legendButton1 = tk.OptionMenu(settingsFrame2, legendOptionsChoice1, *legendOptionsList1)
     legendButton2 = tk.OptionMenu(settingsFrame2, legendOptionsChoice2, *legendOptionsList2)
 
-    chartFillLabel1 = ttk.Label(settingsFrame2, text="Enable or disable the fill between target and current:")
+    chartFillLabel1 = ttk.Label(settingsFrame3, text="Enable or disable the fill between target and current:")
     chartOptionsList1 = ["enabled", "disabled"]
     chartOptionsChoice1 = tk.StringVar(root)
-    chartFillOption1 = tk.OptionMenu(settingsFrame2, chartOptionsChoice1, *chartOptionsList1)
-    fillScaleLabel1 = ttk.Label(settingsFrame2, text="Modify the opacity: ")
-    fillScale1 = ttk.Scale(settingsFrame2, length=200, from_=0, to=100, command=slider)
-    fillScaleLabel2 = ttk.Label(settingsFrame2, text="")
+    chartFillOption1 = tk.OptionMenu(settingsFrame3, chartOptionsChoice1, *chartOptionsList1)
+    fillScaleLabel1 = ttk.Label(settingsFrame3, text="Modify the opacity: ")
+    fillScale1 = ttk.Scale(settingsFrame3, length=200, from_=0, to=100, command=slider)
+    fillScaleLabel2 = ttk.Label(settingsFrame3, text="")
 
-    paddingLabel1 = ttk.Label(settingsFrame2, text="Change upper padding:")
-    paddingLabel2 = ttk.Label(settingsFrame2, text="Change lower padding:")
-    upperPaddingButton1 = ttk.Spinbox(settingsFrame2, from_=3, to=100)
-    lowerPaddingButton1 = ttk.Spinbox(settingsFrame2, from_=-3, to=-100)
+    paddingLabel1 = ttk.Label(settingsFrame4, text="Change upper padding: ")
+    paddingLabel2 = ttk.Label(settingsFrame4, text="Change lower padding: ")
+    upperPaddingButton1 = ttk.Spinbox(settingsFrame4, from_=3, to=100)
+    lowerPaddingButton1 = ttk.Spinbox(settingsFrame4, from_=-3, to=-100)
 
-    saveSettingsButton1 = ttk.Button(settingsFrame2, text="Save settings and close", command=lambda:saveSettings())
+    lineWidthLabel1 = ttk.Label(settingsFrame5, text="Change the width of lines: ")
+    lineWidthSpinbox1 = ttk.Spinbox(settingsFrame5, from_=1, to=25)
+
+    saveSettingsButton1 = ttk.Button(settingsFrame10, text="Save settings and close", command=lambda:saveSettings())
 
     #Grid
     
-    settingsLabel1.grid(row=0, column=0)
+    legendLabel1.grid(row=0, column=0)
     legendButton1.grid(row=1, column=0)
-    legendButton2.grid(row=2, column=0, pady=10)
+    legendLabel2.grid(row=2, column=0,pady=5)
+    legendButton2.grid(row=3, column=0)
 
     chartTitleLabel1.grid(row=3, column=0)
     chartTitleEntry1.grid(row=4, column=0)
 
-    chartFillLabel1.grid(row=5, column=0)
-    chartFillOption1.grid(row=6, column=0,pady=8)
-    fillScaleLabel1.grid(row=7, column=0)
-    fillScale1.grid(row=8, column=0)
-    fillScaleLabel2.grid(row=9, column=0)
+    chartFillLabel1.grid(row=1, column=0)
+    chartFillOption1.grid(row=2, column=0,pady=8)
+    fillScaleLabel1.grid(row=3, column=0)
+    fillScale1.grid(row=4, column=0)
+    fillScaleLabel2.grid(row=5, column=0)
 
-    paddingLabel1.grid(row=10, column=0)
-    paddingLabel2.grid(row=12, column=0)
-    upperPaddingButton1.grid(row=11, column=0)
-    lowerPaddingButton1.grid(row=13, column=0)
+    paddingLabel1.grid(row=1, column=0)
+    paddingLabel2.grid(row=3, column=0)
+    upperPaddingButton1.grid(row=2, column=0)
+    lowerPaddingButton1.grid(row=4, column=0)
+
+    lineWidthLabel1.grid(row=0, column=0)
+    lineWidthSpinbox1.grid(row=1, column=0)
     
-    saveSettingsButton1.grid(row=14, column=0, pady=10)
+    saveSettingsButton1.grid(row=0, column=0, pady=10)
 
     if os.path.isfile("plotSettings.ini"):
         settingsReader = configparser.ConfigParser()
         settingsReader.read("plotSettings.ini")
+
         legendOptionsChoice1.set(settingsReader["Settings"]["legendtoggle"])
         legendOptionsChoice2.set(settingsReader["Settings"]["legendloc"])
-        chartTitleEntry1.insert(0, settingsReader["Settings"]["charttitle"])
-        chartOptionsChoice1.set(settingsReader["Settings"]["filltoggle"])
 
+        chartTitleEntry1.insert(0, settingsReader["Settings"]["charttitle"])
+
+        chartOptionsChoice1.set(settingsReader["Settings"]["filltoggle"])
         fillAlphaLabelGet = settingsReader.getfloat(section="Settings", option="fillalpha")
         fillAlphaLabelReformed = int(fillAlphaLabelGet)
         fillScale1.set(fillAlphaLabelReformed)
         fillScaleLabel2.config(text=f"Current opacity: {fillAlphaLabelReformed}%")
 
-
         upperPaddingButton1.set(settingsReader["Settings"]["upperpadding"])
         lowerPaddingButton1.set(settingsReader["Settings"]["lowerpadding"])
+
+        lineWidthSpinbox1.set(settingsReader["Settings"]["linewidth"])
+
+
         
 def loadData():
     if os.path.isfile("config.ini"):
@@ -248,7 +277,7 @@ def removeLastEntryConfirmation(csv_file): #Foresee editing this such that the u
     else:
         messagebox.showinfo(title="Cancelled", message="User cancelled: entry was not removed")
 
-def viewPlot():   
+def viewPlot():
     #plt.xkcd()
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
@@ -266,6 +295,7 @@ def viewPlot():
         upperYPadding = int(settingsReader["Settings"]["upperpadding"])
         lowerYPadding = int(settingsReader["Settings"]["lowerpadding"])
         fillAlpha = int(settingsReader["Settings"]["fillalpha"])
+        lineWidth = int(settingsReader["Settings"]["linewidth"])
 
                                        
                                     
@@ -289,13 +319,13 @@ def viewPlot():
 
     fig, ax1 = plt.subplots()
     tick_spacing = 1
-    ax1.plot(date, weight_resampled, label=f"Weight ({measurement})", linestyle="dashdot")
+    ax1.plot(date, weight_resampled, label=f"Weight ({measurement})", linewidth=float(lineWidth), linestyle="dashdot")
     ax1.tick_params(axis='y')
     ax1.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
-    plt.axhline(y=desiredWeight, color="g", label="Target weight")
+    plt.axhline(y=desiredWeight, linewidth=float(lineWidth), color="#4CAF50", label="Target weight")
 
     ax2 = ax1.twinx()
-    ax2.plot(date, calories_resampled, color='r', label='Calories')
+    ax2.plot(date, calories_resampled, color='r', linewidth=float(lineWidth), label='Calories')
     ax2.set_ylabel('Calories')
     ax2.tick_params(axis='y')
 
