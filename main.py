@@ -21,7 +21,7 @@ from tkinter import filedialog
 #main
 root = ttk.Window(themename="superhero")
 root.position_center()
-root.resizable(False, False)
+root.resizable(True, True)
 root.geometry("665x400")
 root.title("Weightplotter")
 root.iconname(None)
@@ -178,9 +178,7 @@ def openSettings(): #Want to add: option to pick display and change line colours
         lowerPaddingButton1.set(settingsReader["Settings"]["lowerpadding"])
 
         lineWidthSpinbox1.set(settingsReader["Settings"]["linewidth"])
-
-
-        
+    
 def loadData():
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
@@ -285,7 +283,7 @@ def removeLastEntryConfirmation(csv_file): #Foresee editing this such that the u
     else:
         messagebox.showinfo(title="Cancelled", message="User cancelled: entry was not removed")
 
-def viewPlot():
+def generatePlot():
     #plt.xkcd()
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
@@ -306,8 +304,6 @@ def viewPlot():
         lineWidth = int(settingsReader["Settings"]["linewidth"])
 
                                        
-                                    
-
     else:
         pass
     if os.path.isfile("inputdata.csv"):
@@ -351,14 +347,19 @@ def viewPlot():
         ax1.fill_between(date, weight_resampled, desiredWeight, where=(weight_resampled <= desiredWeight), 
                          interpolate=True, color="r", alpha=float(fillAlpha)/100, label="below weight target")
     plt.tight_layout()
-    plotGenerated = fig 
-    fig.show()
 
-def savePlotAsFile():
-    chosenFilePath = filedialog.asksaveasfilename(defaultextension=".png", filetypes=["Plotfile", "*.png", ("All files", "*.*")])
+    return plt
+
+def showPlot():
+    plot = generatePlot()
+    plot.show()
+
+def savePlotAsFile(plotGenerated): #This works but outputs, at the moment, a plot with dates clumped together
+    generatePlot()
+    chosenFilePath = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
     if chosenFilePath:
         with open(chosenFilePath, "w") as f:
-            chosenFilePath.write(plotGenerated)
+            plotGenerated.savefig(chosenFilePath)
 
     
 #frames and widgets
@@ -386,10 +387,9 @@ dailyCaloriesEntry = ttk.Entry(Frame1, font="helvetica, 12")
 saveButton = ttk.Button(Frame2, text="Save entry", command=lambda: saveData())
 removeLastEntryButton = ttk.Button(Frame2, text="Remove last entry", command=lambda: removeLastEntryConfirmation("inputdata.csv"))
 loadButton = ttk.Button(Frame2, text="Load settings", command=lambda: loadData())
-viewVisualization = ttk.Button(Frame2, text="View visualization", command=lambda: viewPlot())
+viewVisualization = ttk.Button(Frame2, text="View visualization", command=lambda: showPlot())
 openSettingsButton = ttk.Button(Frame2, text="Edit plotting behaviour", command=lambda: openSettings())
-
-
+savePlotButton = ttk.Button(Frame2, text="Save plot as image", command=lambda: savePlotAsFile(plotGenerated=generatePlot()))
 
 Frame1.grid(row=0, column=0)
 Frame2.grid(row=1, column=0)
@@ -412,6 +412,7 @@ removeLastEntryButton.grid(row=0, column=2)
 loadButton.grid(row=0, column=3)
 viewVisualization.grid(row=0, column=4)
 openSettingsButton.grid(row=0, column=5)
+savePlotButton.grid(row=0, column=6)
 
 
 
@@ -427,3 +428,4 @@ openSettingsButton.grid(row=0, column=5)
 
 if __name__== "__main__":
     root.mainloop()
+    generatePlot()
