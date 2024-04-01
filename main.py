@@ -1,7 +1,6 @@
-'''Future additions? : Statistics page with maximum, minimum, average over last 30 days, last 7 days, etc; changeable option. 
-                       Option to save PNG of the plot, with a pop-up window to choose target and name plot
+'''Future additions? : Statistics page with maximum, minimum, average over last 30 days, last 7 days, etc; changeable option.
                        Verification to ensure that there isn't more than one entry a day, or if there is plot the average of the entries
-                       Empty fields after entry to avoid double clicking and adding twice
+                       Option to pick display and change line colours. Hex?
 
     '''
 
@@ -21,8 +20,8 @@ from tkinter import filedialog
 #main
 root = ttk.Window(themename="superhero")
 root.position_center()
-root.resizable(True, True)
-root.geometry("665x400")
+root.resizable(False, False)
+root.geometry("820x400")
 root.title("Weightplotter")
 root.iconname(None)
 defaultSettings = {
@@ -43,7 +42,7 @@ if not settingsExist:
         settingsConfig.write(plotSettingsFile)
 
 #settings
-def openSettings(): #Want to add: option to pick display and change line colours. Hex?
+def openSettings():
 
     def slider(e):
         fillScaleLabel2.config(text=f"Current opacity: {int(fillScale1.get())}%")
@@ -219,6 +218,9 @@ def saveData():
         config.write(configfile)
 
     verifyFields()
+    weightDesiredInput.delete(0, tk.END)
+    weightCurrentInput.delete(0, tk.END)
+    dailyCaloriesEntry.delete(0, tk.END)
 
 def verifyFields():
     #config.ini
