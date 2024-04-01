@@ -1,3 +1,10 @@
+'''Future additions? : Statistics page with maximum, minimum, average over last 30 days, last 7 days, etc; changeable option. 
+                       Option to save PNG of the plot, with a pop-up window to choose target and name plot
+                       Verification to ensure that there isn't more than one entry a day, or if there is plot the average of the entries
+                       Empty fields after entry to avoid double clicking and adding twice
+
+    '''
+
 import tkinter as tk
 import csv
 import os
@@ -9,6 +16,7 @@ from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter, DayLocator
 from datetime import datetime
 from tkinter import messagebox
+from tkinter import filedialog
 
 #main
 root = ttk.Window(themename="superhero")
@@ -118,7 +126,7 @@ def openSettings(): #Want to add: option to pick display and change line colours
     paddingLabel1 = ttk.Label(settingsFrame4, text="Change upper padding: ")
     paddingLabel2 = ttk.Label(settingsFrame4, text="Change lower padding: ")
     upperPaddingButton1 = ttk.Spinbox(settingsFrame4, from_=3, to=100)
-    lowerPaddingButton1 = ttk.Spinbox(settingsFrame4, from_=-3, to=-100)
+    lowerPaddingButton1 = ttk.Spinbox(settingsFrame4, from_=3, to=100)
 
     lineWidthLabel1 = ttk.Label(settingsFrame5, text="Change the width of lines: ")
     lineWidthSpinbox1 = ttk.Spinbox(settingsFrame5, from_=1, to=25)
@@ -325,7 +333,7 @@ def viewPlot():
     plt.axhline(y=desiredWeight, linewidth=float(lineWidth), color="#4CAF50", label="Target weight")
 
     ax2 = ax1.twinx()
-    ax2.plot(date, calories_resampled, color='r', linewidth=float(lineWidth), label='Calories')
+    ax2.plot(date, calories_resampled, color='red', linewidth=float(lineWidth), label='Calories')
     ax2.set_ylabel('Calories')
     ax2.tick_params(axis='y')
 
@@ -343,10 +351,16 @@ def viewPlot():
         ax1.fill_between(date, weight_resampled, desiredWeight, where=(weight_resampled <= desiredWeight), 
                          interpolate=True, color="r", alpha=float(fillAlpha)/100, label="below weight target")
     plt.tight_layout()
+    plotGenerated = fig 
     fig.show()
+
+def savePlotAsFile():
+    chosenFilePath = filedialog.asksaveasfilename(defaultextension=".png", filetypes=["Plotfile", "*.png", ("All files", "*.*")])
+    if chosenFilePath:
+        with open(chosenFilePath, "w") as f:
+            chosenFilePath.write(plotGenerated)
+
     
-
-
 #frames and widgets
 Frame1 = ttk.LabelFrame(root)
 Frame2 = ttk.LabelFrame(root)
