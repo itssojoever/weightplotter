@@ -15,6 +15,7 @@ from matplotlib import pyplot as plt
 from datetime import datetime
 from tkinter import messagebox
 from tkinter import filedialog
+from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
 #main
 root = ttk.Window(themename="superhero")
@@ -32,6 +33,7 @@ defaultSettings = {
     "upperpadding" : 20,
     "lowerpadding" : 3,
     "linewidth" : 5,
+    "weightlinecolour" : "#56c91c",
     }
 settingsExist = os.path.isfile("plotSettings.ini")
 if not settingsExist:
@@ -46,6 +48,34 @@ def openSettings():
     def slider(e):
         fillScaleLabel2.config(text=f"Current opacity: {int(fillScale1.get())}%")
 
+    def colourChooser(button):
+        if button == "weight":
+            weightColour = ColorChooserDialog()
+            weightColour.show()
+            weightColour = weightColour.result[2] #Retrieve hex
+            return weightColour
+            
+        elif button == "calories":
+            caloriesColour = ColorChooserDialog()
+            caloriesColour.show()
+            caloriesColour = caloriesColour.result[2]
+            return caloriesColour
+
+
+        elif button == "alpha":
+            alphaColour = ColorChooserDialog()
+            alphaColour.show()
+            alphaColour = alphaColour.result[2]
+            return alphaColour
+
+        elif button == "targetweight":
+
+            targetWeightColour = ColorChooserDialog()
+            targetWeightColour.show()
+            targetWeightColour = targetWeightColour.result[2]
+            return targetWeightColour
+
+
     def saveSettings():
         if os.path.isfile("plotSettings.ini"):
             with open("plotSettings.ini", "w") as settingsFile:
@@ -58,7 +88,11 @@ def openSettings():
                     "charttitle" : chartTitleEntry1.get(),
                     "upperpadding" : upperPaddingButton1.get(),
                     "lowerpadding" : lowerPaddingButton1.get(),
-                    "linewidth" : lineWidthSpinbox1.get()
+                    "linewidth" : lineWidthSpinbox1.get(),
+                    "weightlinecolour" : colourChooser("weight") , 
+                    #"calorieslinecolour" :  ,
+                    #"alphalinecolour" :  ,
+                    #"targetweightlinecolour" :  ,
                     }
                 settingsEditor["Settings"] = settings
                 settingsEditor.write(settingsFile)
@@ -131,6 +165,31 @@ def openSettings():
 
     saveSettingsButton1 = ttk.Button(settingsFrame10, text="Save settings and close", command=lambda:saveSettings())
 
+    if os.path.isfile("plotSettings.ini"):
+        settingsReader = configparser.ConfigParser()
+        settingsReader.read("plotSettings.ini")
+
+        legendOptionsChoice1.set(settingsReader["Settings"]["legendtoggle"])
+        legendOptionsChoice2.set(settingsReader["Settings"]["legendloc"])
+
+        chartTitleEntry1.insert(0, settingsReader["Settings"]["charttitle"])
+
+        chartOptionsChoice1.set(settingsReader["Settings"]["filltoggle"])
+        fillAlphaLabelGet = settingsReader.getfloat(section="Settings", option="fillalpha")
+        fillAlphaLabelReformed = int(fillAlphaLabelGet)
+        fillScale1.set(fillAlphaLabelReformed)
+        fillScaleLabel2.config(text=f"Current opacity: {fillAlphaLabelReformed}%")
+
+        upperPaddingButton1.set(settingsReader["Settings"]["upperpadding"])
+        lowerPaddingButton1.set(settingsReader["Settings"]["lowerpadding"])
+
+        lineWidthSpinbox1.set(settingsReader["Settings"]["linewidth"])
+        #weightLineButtonColour = settingsReader.get("Settings", "weightlinecolour")
+        #print(weightLineButtonColour)
+
+    weightLineColourButton = ttk.Button(settingsFrame5, text="Colour picker", command=lambda: colourChooser("weight"))
+
+
     #Grid
     
     legendLabel1.grid(row=0, column=0)
@@ -154,28 +213,10 @@ def openSettings():
 
     lineWidthLabel1.grid(row=0, column=0)
     lineWidthSpinbox1.grid(row=1, column=0)
+
+    weightLineColourButton.grid(row=2, column=0)
     
     saveSettingsButton1.grid(row=0, column=0, pady=10)
-
-    if os.path.isfile("plotSettings.ini"):
-        settingsReader = configparser.ConfigParser()
-        settingsReader.read("plotSettings.ini")
-
-        legendOptionsChoice1.set(settingsReader["Settings"]["legendtoggle"])
-        legendOptionsChoice2.set(settingsReader["Settings"]["legendloc"])
-
-        chartTitleEntry1.insert(0, settingsReader["Settings"]["charttitle"])
-
-        chartOptionsChoice1.set(settingsReader["Settings"]["filltoggle"])
-        fillAlphaLabelGet = settingsReader.getfloat(section="Settings", option="fillalpha")
-        fillAlphaLabelReformed = int(fillAlphaLabelGet)
-        fillScale1.set(fillAlphaLabelReformed)
-        fillScaleLabel2.config(text=f"Current opacity: {fillAlphaLabelReformed}%")
-
-        upperPaddingButton1.set(settingsReader["Settings"]["upperpadding"])
-        lowerPaddingButton1.set(settingsReader["Settings"]["lowerpadding"])
-
-        lineWidthSpinbox1.set(settingsReader["Settings"]["linewidth"])
 
 def openStatistics():
     statisticsWindow = ttk.Toplevel(root)
@@ -205,7 +246,7 @@ def openStatistics():
     peakCaloriesDateStatistic = data.loc[peakCaloriesDateIndex, "date"]
 
     averageWeightRoundedStatistic = data["weight"].mean().round(1) #Round the mean to 1 decimal place, removing .round() will give a mean with multiple numbers after decimal point
-    averageCaloriesStatistic = data["calories"].mean()
+    averageCaloriesStatistic = data["calories"].mean().round(1) #as above, so below
     
     statisticsLabel0 = ttk.Label(statisticsFrame0, text="Statistics")
     statisticsLabel1 = ttk.Label(statisticsFrame1, text=f"Peak weight: {peakWeightStatistic} {measurement} on {peakWeightDateStatistic}")
@@ -406,6 +447,7 @@ def savePlotAsFile(plotGenerated): #This works but outputs, at the moment, a plo
     if chosenFilePath:
         with open(chosenFilePath, "w") as f:
             plotGenerated.savefig(chosenFilePath)
+            messagebox.showinfo(title="saved", message=f"Plot saved as image at {chosenFilePath} ")
 
     
 #frames and widgets
