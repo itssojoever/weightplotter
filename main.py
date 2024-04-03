@@ -203,14 +203,23 @@ def openStatistics():
     peakCaloriesStatistic = data["calories"].max()
     peakCaloriesDateIndex = data["calories"].idxmax()
     peakCaloriesDateStatistic = data.loc[peakCaloriesDateIndex, "date"]
+
+    averageWeightRoundedStatistic = data["weight"].mean().round(1) #Round the mean to 1 decimal place, removing .round() will give a mean with multiple numbers after decimal point
+    averageCaloriesStatistic = data["calories"].mean()
     
     statisticsLabel0 = ttk.Label(statisticsFrame0, text="Statistics")
     statisticsLabel1 = ttk.Label(statisticsFrame1, text=f"Peak weight: {peakWeightStatistic} {measurement} on {peakWeightDateStatistic}")
     statisticsLabel2 = ttk.Label(statisticsFrame1, text=f"Highest daily calories: {peakCaloriesStatistic} kcal on {peakCaloriesDateStatistic}")
+    statisticsLabel3 = ttk.Label(statisticsFrame1, text=f"Mean of calories: {averageCaloriesStatistic} kcal")
+    statisticsLabel4 = ttk.Label(statisticsFrame1, text=f"Mean of weight: {averageWeightRoundedStatistic} {measurement}")
+    #statisticsLabel5 = ttk.Label(statisticsFrame1, text=f"Rate of growth: {weightPercentChange}%")
 
     statisticsLabel0.grid(row=0, column=0)
     statisticsLabel1.grid(row=0, column=0)
     statisticsLabel2.grid(row=1, column=0)
+    statisticsLabel3.grid(row=2, column=0)
+    statisticsLabel4.grid(row=3, column=0)
+    #statisticsLabel5.grid(row=4, column=0)
     
 def loadData():
     if os.path.isfile("config.ini"):
