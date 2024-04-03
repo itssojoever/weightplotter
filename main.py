@@ -12,7 +12,6 @@ import pandas as pd
 import ttkbootstrap as ttk
 import matplotlib.ticker as ticker
 from matplotlib import pyplot as plt
-from matplotlib.dates import DateFormatter, DayLocator
 from datetime import datetime
 from tkinter import messagebox
 from tkinter import filedialog
@@ -21,7 +20,7 @@ from tkinter import filedialog
 root = ttk.Window(themename="superhero")
 root.position_center()
 root.resizable(False, False)
-root.geometry("820x400")
+root.geometry("935x400")
 root.title("Weightplotter")
 root.iconname(None)
 defaultSettings = {
@@ -177,6 +176,41 @@ def openSettings():
         lowerPaddingButton1.set(settingsReader["Settings"]["lowerpadding"])
 
         lineWidthSpinbox1.set(settingsReader["Settings"]["linewidth"])
+
+def openStatistics():
+    statisticsWindow = ttk.Toplevel(root)
+    statisticsWindow.resizable(True, True)
+    statisticsWindow.geometry("357x720")
+    statisticsWindow.title("Statistics")
+    statisticsWindow.iconname(None)
+
+    statisticsFrame0 = ttk.LabelFrame(statisticsWindow) #Umbrella frame
+    statisticsFrame1 = ttk.LabelFrame(statisticsFrame0) #Statistics
+
+    statisticsFrame0.grid(row=0, column=0)
+    statisticsFrame1.grid(row=1, column=0)
+
+    if os.path.isfile("config.ini"):
+        config = configparser.ConfigParser()
+        config.read("config.ini")
+        measurement = config["Configuration"]["measurement"]
+
+    data=pd.read_csv("inputdata.csv")
+    peakWeightStatistic = data["weight"].max()
+    peakWeightDateIndex = data["weight"].idxmax()
+    peakWeightDateStatistic = data.loc[peakWeightDateIndex, "date"]
+
+    peakCaloriesStatistic = data["calories"].max()
+    peakCaloriesDateIndex = data["calories"].idxmax()
+    peakCaloriesDateStatistic = data.loc[peakCaloriesDateIndex, "date"]
+    
+    statisticsLabel0 = ttk.Label(statisticsFrame0, text="Statistics")
+    statisticsLabel1 = ttk.Label(statisticsFrame1, text=f"Peak weight: {peakWeightStatistic} {measurement} on {peakWeightDateStatistic}")
+    statisticsLabel2 = ttk.Label(statisticsFrame1, text=f"Highest daily calories: {peakCaloriesStatistic} kcal on {peakCaloriesDateStatistic}")
+
+    statisticsLabel0.grid(row=0, column=0)
+    statisticsLabel1.grid(row=0, column=0)
+    statisticsLabel2.grid(row=1, column=0)
     
 def loadData():
     if os.path.isfile("config.ini"):
@@ -273,8 +307,8 @@ def removeLastEntry(csv_file):
             writer.writerows(contents)
 
 def removeLastEntryConfirmation(csv_file): #Foresee editing this such that the user can pick a specific entry to delete
-    msgBoxConfirmation = messagebox.askyesno(title="Are you sure?", message="Are you sure you wish to remove the most recent entry? This cannot be reversed")
-    if msgBoxConfirmation == True:
+    RemoveLastEntryMsgBoxConfirmation = messagebox.askyesno(title="Are you sure?", message="Are you sure you wish to remove the most recent entry? This cannot be reversed")
+    if RemoveLastEntryMsgBoxConfirmation == True:
         with open(csv_file, "r") as file:
             reader = csv.reader(file)
             contents = list(reader)
@@ -282,6 +316,7 @@ def removeLastEntryConfirmation(csv_file): #Foresee editing this such that the u
             with open(csv_file, 'w', newline='') as editFile:
                 writer = csv.writer(editFile)
                 writer.writerows(contents)
+                messagebox.showinfo(title="Entry removed", message="Last entry was successfully removed")
     else:
         messagebox.showinfo(title="Cancelled", message="User cancelled: entry was not removed")
 
@@ -392,6 +427,7 @@ loadButton = ttk.Button(Frame2, text="Load settings", command=lambda: loadData()
 viewVisualization = ttk.Button(Frame2, text="View visualization", command=lambda: showPlot())
 openSettingsButton = ttk.Button(Frame2, text="Edit plotting behaviour", command=lambda: openSettings())
 savePlotButton = ttk.Button(Frame2, text="Save plot as image", command=lambda: savePlotAsFile(plotGenerated=generatePlot()))
+openStatisticsButton = ttk.Button(Frame2, text="Open statistics", command=lambda: openStatistics())
 
 Frame1.grid(row=0, column=0)
 Frame2.grid(row=1, column=0)
@@ -415,6 +451,7 @@ loadButton.grid(row=0, column=3)
 viewVisualization.grid(row=0, column=4)
 openSettingsButton.grid(row=0, column=5)
 savePlotButton.grid(row=0, column=6)
+openStatisticsButton.grid(row=0, column=7)
 
 
 
@@ -430,4 +467,3 @@ savePlotButton.grid(row=0, column=6)
 
 if __name__== "__main__":
     root.mainloop()
-    generatePlot()
