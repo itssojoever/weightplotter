@@ -1,6 +1,7 @@
 '''Future additions? : Statistics page with maximum, minimum, average over last 30 days, last 7 days, etc; changeable option.
                        Verification to ensure that there isn't more than one entry a day, or if there is plot the average of the entries
                        Option to pick display and change line colours. Hex?
+                       Option to open all entries in a separate window; amend or delete as desired
 
     '''
 
@@ -32,8 +33,11 @@ defaultSettings = {
     "charttitle" : "Weight plot",
     "upperpadding" : 20,
     "lowerpadding" : 3,
-    "linewidth" : 5,
-    "weightlinecolour" : "#56c91c",
+    "linewidth" : 3,
+    #"weightlinecolour" : "#56c91c",
+    #"calorieslinecolour" : "#ab0f1c",
+    #"alphalinecolour" : "#e02232",
+    #"targetweightlinecolour" : "#073ae0",
     }
 settingsExist = os.path.isfile("plotSettings.ini")
 if not settingsExist:
@@ -48,33 +52,31 @@ def openSettings():
     def slider(e):
         fillScaleLabel2.config(text=f"Current opacity: {int(fillScale1.get())}%")
 
-    def colourChooser(button):
-        if button == "weight":
-            weightColour = ColorChooserDialog()
-            weightColour.show()
-            weightColour = weightColour.result[2] #Retrieve hex
-            return weightColour
+    # def colourChooser(button):
+    #     global weightColour #This is bad practice; will refactor when more experienced and can work it out
+    #     global caloriesColour
+    #     global alphaColour
+    #     global targetWeightColour
+
+    #     if button == "weight":
+    #         weightColour = ColorChooserDialog()
+    #         weightColour.show()
+    #         weightColour = weightColour.result[2] #Retrieve hex
             
-        elif button == "calories":
-            caloriesColour = ColorChooserDialog()
-            caloriesColour.show()
-            caloriesColour = caloriesColour.result[2]
-            return caloriesColour
+    #     elif button == "calories":
+    #         caloriesColour = ColorChooserDialog()
+    #         caloriesColour.show()
+    #         caloriesColour = caloriesColour.result[2]
 
+    #     elif button == "alpha":
+    #         alphaColour = ColorChooserDialog()
+    #         alphaColour.show()
+    #         alphaColour = alphaColour.result[2]
 
-        elif button == "alpha":
-            alphaColour = ColorChooserDialog()
-            alphaColour.show()
-            alphaColour = alphaColour.result[2]
-            return alphaColour
-
-        elif button == "targetweight":
-
-            targetWeightColour = ColorChooserDialog()
-            targetWeightColour.show()
-            targetWeightColour = targetWeightColour.result[2]
-            return targetWeightColour
-
+    #     elif button == "targetweight":
+    #         targetWeightColour = ColorChooserDialog()
+    #         targetWeightColour.show()
+    #         targetWeightColour = targetWeightColour.result[2]
 
     def saveSettings():
         if os.path.isfile("plotSettings.ini"):
@@ -89,10 +91,10 @@ def openSettings():
                     "upperpadding" : upperPaddingButton1.get(),
                     "lowerpadding" : lowerPaddingButton1.get(),
                     "linewidth" : lineWidthSpinbox1.get(),
-                    "weightlinecolour" : colourChooser("weight") , 
-                    #"calorieslinecolour" :  ,
-                    #"alphalinecolour" :  ,
-                    #"targetweightlinecolour" :  ,
+                    #"weightlinecolour" : weightColour,
+                    #"calorieslinecolour" : caloriesColour,
+                    #"alphalinecolour" :  alphaColour,
+                    #"targetweightlinecolour" :  targetWeightColour,
                     }
                 settingsEditor["Settings"] = settings
                 settingsEditor.write(settingsFile)
@@ -184,11 +186,11 @@ def openSettings():
         lowerPaddingButton1.set(settingsReader["Settings"]["lowerpadding"])
 
         lineWidthSpinbox1.set(settingsReader["Settings"]["linewidth"])
-        #weightLineButtonColour = settingsReader.get("Settings", "weightlinecolour")
-        #print(weightLineButtonColour)
 
-    weightLineColourButton = ttk.Button(settingsFrame5, text="Colour picker", command=lambda: colourChooser("weight"))
-
+    #weightLineColourButton = ttk.Button(settingsFrame5, text="Colour picker", command=lambda: colourChooser("weight"))
+    #caloriesLineColourButton = ttk.Button(settingsFrame5, text="Colour picker", command=lambda: colourChooser("calories"))
+    #alphaLineColourButton = ttk.Button(settingsFrame5, text="Colour picker", command=lambda: colourChooser("alpha"))
+    #targetWeightLineColourButton = ttk.Button(settingsFrame5, text="Colour picker", command=lambda: colourChooser("targetweight"))
 
     #Grid
     
@@ -214,7 +216,10 @@ def openSettings():
     lineWidthLabel1.grid(row=0, column=0)
     lineWidthSpinbox1.grid(row=1, column=0)
 
-    weightLineColourButton.grid(row=2, column=0)
+    #weightLineColourButton.grid(row=2, column=0)
+    #caloriesLineColourButton.grid(row=3, column=0)
+    #alphaLineColourButton.grid(row=4, column=0)
+    #targetWeightLineColourButton.grid(row=5, column=0)
     
     saveSettingsButton1.grid(row=0, column=0, pady=10)
 
@@ -389,8 +394,11 @@ def generatePlot():
         lowerYPadding = int(settingsReader["Settings"]["lowerpadding"])
         fillAlpha = int(settingsReader["Settings"]["fillalpha"])
         lineWidth = int(settingsReader["Settings"]["linewidth"])
-
-                                       
+        #weightLineColour = settingsReader["Settings"]["weightlinecolour"]
+        #calouriesLineColour = settingsReader["Settings"]["calorieslinecolour"]
+        #alphaLineColour = settingsReader["Settings"]["alphalinecolour"]
+        #targetWeightLineColour = settingsReader["Settings"]["targetweightlinecolour"]
+ 
     else:
         pass
     if os.path.isfile("inputdata.csv"):
@@ -410,13 +418,13 @@ def generatePlot():
 
     fig, ax1 = plt.subplots()
     tick_spacing = 1
-    ax1.plot(date, weight_resampled, label=f"Weight ({measurement})", linewidth=float(lineWidth), linestyle="dashdot")
+    ax1.plot(date, weight_resampled, label=f"Weight ({measurement})", color="blue", linewidth=float(lineWidth), linestyle="dashdot")
     ax1.tick_params(axis='y')
     ax1.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
-    plt.axhline(y=desiredWeight, linewidth=float(lineWidth), color="#4CAF50", label="Target weight")
+    plt.axhline(y=desiredWeight, linewidth=float(lineWidth), color="black", label="Target weight")
 
     ax2 = ax1.twinx()
-    ax2.plot(date, calories_resampled, color='red', linewidth=float(lineWidth), label='Calories')
+    ax2.plot(date, calories_resampled, color="green", linewidth=float(lineWidth), label='Calories')
     ax2.set_ylabel('Calories')
     ax2.tick_params(axis='y')
 
@@ -432,7 +440,7 @@ def generatePlot():
     fig.subplots_adjust(left=0.1, bottom=0.1)
     if fillToggle == "enabled":
         ax1.fill_between(date, weight_resampled, desiredWeight, where=(weight_resampled <= desiredWeight), 
-                         interpolate=True, color="r", alpha=float(fillAlpha)/100, label="below weight target")
+                         interpolate=True, color="blue", alpha=float(fillAlpha)/100, label="below weight target")
     plt.tight_layout()
 
     return plt
