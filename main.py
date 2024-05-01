@@ -17,13 +17,14 @@ from matplotlib import pyplot as plt
 from datetime import datetime
 from tkinter import messagebox
 from tkinter import filedialog
-from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
+from tkinter import simpledialog
+#from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
 #main
 root = ttk.Window(themename="superhero")
 root.position_center()
 root.resizable(False, False)
-root.geometry("845x450")
+root.geometry("965x450")
 root.title("Weightplotter")
 root.iconname(None)
 defaultSettings = {
@@ -268,6 +269,79 @@ def openStatistics():
     statisticsLabel4.grid(row=3, column=0)
     #statisticsLabel5.grid(row=4, column=0)
     
+def openInformation():
+
+    informationWindow = ttk.Toplevel(root)
+    informationWindow.resizable(True, True)
+    informationWindow.geometry("620x440")
+    informationWindow.title("Entries")
+    informationWindow.iconname(None)
+
+    informationFrame1 = ttk.LabelFrame(informationWindow)
+    informationFrame2 = ttk.LabelFrame(informationWindow)
+
+    informationTree = ttk.Treeview(informationFrame1, columns=("date", "weight", "calories"), show="headings", height=20)
+    informationTree.heading("date", text="Date")
+    informationTree.heading("weight", text="Weight")
+    informationTree.heading("calories", text="Calories")
+
+    informationScroll = ttk.Scrollbar(informationWindow, orient=tk.VERTICAL, command=informationTree.yview)
+    informationTree.configure(yscrollcommand=informationScroll.set)
+
+    with open("inputdata.csv") as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            informationTree.insert("", tk.END, values=row)
+
+    def editEntryWeight():
+        selected = informationTree.selection()
+        if selected:
+            item = informationTree.item(selected)
+            modification = simpledialog.askstring("Edit entry", "Modify weight:", initialvalue=item["values"][1])
+            if modification is not None:
+                informationTree.item(selected, values=(item['values'][0], modification, item['values'][2]))
+    
+    def editEntryCalories():
+        selected = informationTree.selection()
+        if selected:
+            item = informationTree.item(selected)
+            modification = simpledialog.askstring("Edit entry", "Modify calories:", initialvalue=item["values"][2])
+            if modification is not None:
+                informationTree.item(selected, values=(item['values'][0],item['values'][1], modification))
+
+
+    def deleteEntry():
+        selected = informationTree.selection()
+        if selected:
+            print(selected)
+
+    #def writeModification(csv_file, entry_date, new_entry):
+        #with open(csv_file, "r") as file:
+                        #reader = csv.reader(file)
+                        #for row in reader:
+                            #data = list(reader)
+        
+        #for row in data:
+            #if row[0] == entry_date:
+
+    
+    deleteEntryButton = ttk.Button(informationFrame2, text="Delete selected entry", command=lambda:deleteEntry())
+    editCaloriesButton = ttk.Button(informationFrame2, text="Edit selected calories", command=lambda:editEntryCalories())
+    editWeightButton = ttk.Button(informationFrame2, text="Edit selected weight", command=lambda:editEntryWeight())
+
+
+    informationFrame1.grid(row=0, column=0)
+    informationFrame2.grid(row=1, column=0)
+    informationTree.grid(row=0, column=0, sticky="nsew")
+    informationScroll.grid(row=0, column=1, sticky="ns")
+    deleteEntryButton.grid(row=1, column=0)
+    editWeightButton.grid(row=1, column=1)
+    editCaloriesButton.grid(row=1, column=2)
+
+
+
+
+
 def loadData():
     if os.path.isfile("config.ini"):
         config = configparser.ConfigParser()
@@ -489,6 +563,7 @@ viewVisualization = ttk.Button(Frame2, text="View visualization", command=lambda
 openSettingsButton = ttk.Button(Frame2, text="Edit plotting behaviour", command=lambda: openSettings())
 savePlotButton = ttk.Button(Frame2, text="Save plot as image", command=lambda: savePlotAsFile(plotGenerated=generatePlot()))
 openStatisticsButton = ttk.Button(Frame2, text="Open statistics", command=lambda: openStatistics())
+openInformationButton = ttk.Button(Frame2, text="View all entries", command=lambda: openInformation())
 
 Frame1.grid(row=0, column=0)
 Frame2.grid(row=1, column=0)
@@ -513,6 +588,7 @@ viewVisualization.grid(row=0, column=3)
 openSettingsButton.grid(row=0, column=4)
 savePlotButton.grid(row=0, column=5)
 openStatisticsButton.grid(row=0, column=6)
+openInformationButton.grid(row=0, column=7)
 
 
 
