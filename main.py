@@ -2,6 +2,7 @@
                        Verification to ensure that there isn't more than one entry a day, or if there is plot the average of the entries
                        Option to pick display and change line colours. Hex?
                        Option to open all entries in a separate window; amend or delete as desired
+                       Protein 
 
     '''
 
@@ -22,7 +23,7 @@ from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 root = ttk.Window(themename="superhero")
 root.position_center()
 root.resizable(False, False)
-root.geometry("935x400")
+root.geometry("845x450")
 root.title("Weightplotter")
 root.iconname(None)
 defaultSettings = {
@@ -480,7 +481,8 @@ l5 = ttk.Label(Frame1, font="Helvetica, 12", text="Input daily calories: ")
 weightCurrentInput = ttk.Entry(Frame1, font="helvetica, 12")
 dailyCaloriesEntry = ttk.Entry(Frame1, font="helvetica, 12")
 
-saveButton = ttk.Button(Frame2, text="Save entry", command=lambda: saveData())
+#Buttons
+saveButton = ttk.Button(Frame1, text="Save entry", command=lambda: saveData())
 removeLastEntryButton = ttk.Button(Frame2, text="Remove last entry", command=lambda: removeLastEntryConfirmation("inputdata.csv"))
 loadButton = ttk.Button(Frame2, text="Load settings", command=lambda: loadData())
 viewVisualization = ttk.Button(Frame2, text="View visualization", command=lambda: showPlot())
@@ -503,14 +505,14 @@ l4.grid(row=6, column=0)
 weightCurrentInput.grid(row=7, column=0)
 l5.grid(row=8, column=0)
 dailyCaloriesEntry.grid(row=9, column=0)
+saveButton.grid(row=10, column=0, pady=8)
 
-saveButton.grid(row=0, column=1)
-removeLastEntryButton.grid(row=0, column=2)
-loadButton.grid(row=0, column=3)
-viewVisualization.grid(row=0, column=4)
-openSettingsButton.grid(row=0, column=5)
-savePlotButton.grid(row=0, column=6)
-openStatisticsButton.grid(row=0, column=7)
+removeLastEntryButton.grid(row=0, column=1)
+loadButton.grid(row=0, column=2)
+viewVisualization.grid(row=0, column=3)
+openSettingsButton.grid(row=0, column=4)
+savePlotButton.grid(row=0, column=5)
+openStatisticsButton.grid(row=0, column=6)
 
 
 
