@@ -313,7 +313,11 @@ def openInformation():
     def deleteEntry():
         selected = informationTree.selection()
         if selected:
-            print(selected)
+            if messagebox.askyesno(title="Confirm deletion", message="Are you sure you want to delete this entry?"):
+                informationTree.delete(selected)
+            else:
+                if selected:
+                    messagebox.showinfo(title="Cancelled", message="Entry not removed")
 
     #def writeModification(csv_file, entry_date, new_entry):
         #with open(csv_file, "r") as file:
