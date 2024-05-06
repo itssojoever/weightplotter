@@ -2,7 +2,7 @@
                        Verification to ensure that there isn't more than one entry a day, or if there is plot the average of the entries
                        Option to pick display and change line colours. Hex?
                        Option to open all entries in a separate window; amend or delete as desired
-                       Protein 
+                       Protein
 
     '''
 
@@ -225,10 +225,11 @@ def openSettings():
     
     saveSettingsButton1.grid(row=0, column=0, pady=10)
 
+#statistics
 def openStatistics():
     statisticsWindow = ttk.Toplevel(root)
     statisticsWindow.resizable(True, True)
-    statisticsWindow.geometry("357x720")
+    statisticsWindow.geometry("325x175")
     statisticsWindow.title("Statistics")
     statisticsWindow.iconname(None)
 
@@ -293,7 +294,7 @@ def openInformation():
         for row in reader:
             informationTree.insert("", tk.END, values=row)
 
-    def editEntryWeight():
+    def editEntryWeight(): #Lacking CSV write
         selected = informationTree.selection()
         if selected:
             item = informationTree.item(selected)
@@ -301,7 +302,7 @@ def openInformation():
             if modification is not None:
                 informationTree.item(selected, values=(item['values'][0], modification, item['values'][2]))
     
-    def editEntryCalories():
+    def editEntryCalories(): #Lacking CSV write
         selected = informationTree.selection()
         if selected:
             item = informationTree.item(selected)
@@ -310,7 +311,7 @@ def openInformation():
                 informationTree.item(selected, values=(item['values'][0],item['values'][1], modification))
 
 
-    def deleteEntry():
+    def deleteEntry(): #Lacking CSV write
         selected = informationTree.selection()
         if selected:
             if messagebox.askyesno(title="Confirm deletion", message="Are you sure you want to delete this entry?"):
@@ -319,16 +320,6 @@ def openInformation():
                 if selected:
                     messagebox.showinfo(title="Cancelled", message="Entry not removed")
 
-    #def writeModification(csv_file, entry_date, new_entry):
-        #with open(csv_file, "r") as file:
-                        #reader = csv.reader(file)
-                        #for row in reader:
-                            #data = list(reader)
-        
-        #for row in data:
-            #if row[0] == entry_date:
-
-    
     deleteEntryButton = ttk.Button(informationFrame2, text="Delete selected entry", command=lambda:deleteEntry())
     editCaloriesButton = ttk.Button(informationFrame2, text="Edit selected calories", command=lambda:editEntryCalories())
     editWeightButton = ttk.Button(informationFrame2, text="Edit selected weight", command=lambda:editEntryWeight())
