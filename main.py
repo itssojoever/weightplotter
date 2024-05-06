@@ -18,6 +18,7 @@ from datetime import datetime
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import simpledialog
+from datetime import date
 #from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
 #main
@@ -354,30 +355,44 @@ def saveData():
     inputtedCurrentWeight = weightCurrentInput.get()
     inputtedDailyCalories = dailyCaloriesEntry.get()
 
+
     columnsExist = os.path.isfile("inputdata.csv")
     
-    with open("inputdata.csv", "a", newline="") as csvfile:
-        columns = ["date", "weight", "calories"]
-        writer = csv.DictWriter(csvfile, fieldnames=columns)
-        if not columnsExist:
-            writer.writeheader()
-        writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight, "calories" : inputtedDailyCalories})
-        csvfile.close()
+    actualDate = date.today()
+    stringDate = actualDate.strftime("%d/%m/%Y")
+
+    with open("inputdata.csv", "r") as csvfile:
+        dateParser = csv.DictReader(csvfile)
+        column = "date"
+        dates = []
+        print (type(dates))
+        for row in dateParser:
+            dates.append(row[column])
+        if stringDate in dates:
+            messagebox.showerror (title="Error", message="There is already an entry for today, please delete the existing entry to add another")
+        else:
+            with open("inputdata.csv", "a", newline="") as csvfile:   
+                columns = ["date", "weight", "calories"]
+                writer = csv.DictWriter(csvfile, fieldnames=columns)
+                if not columnsExist:
+                    writer.writeheader()
+                writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight, "calories" : inputtedDailyCalories})
+                csvfile.close()
     
-    #INI: target weight and preferred measurement
-    inputtedMeasurement = weightMeasurementInputted.get()
-    desiredWeight = weightDesiredInput.get()
+                #INI: target weight and preferred measurement
+                inputtedMeasurement = weightMeasurementInputted.get()
+                desiredWeight = weightDesiredInput.get()
 
-    configuration = {
-        "measurement" : inputtedMeasurement,
-        "desiredWeight" : desiredWeight
-    }
-    config = configparser.ConfigParser()
-    config["Configuration"] = configuration
-    with open("config.ini", "w") as configfile:
-        config.write(configfile)
+                configuration = {
+                    "measurement" : inputtedMeasurement,
+                    "desiredWeight" : desiredWeight
+                }
+                config = configparser.ConfigParser()
+                config["Configuration"] = configuration
+                with open("config.ini", "w") as configfile:
+                    config.write(configfile)
+                verifyFields()
 
-    verifyFields()
     weightDesiredInput.delete(0, tk.END)
     weightCurrentInput.delete(0, tk.END)
     dailyCaloriesEntry.delete(0, tk.END)
