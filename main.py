@@ -348,6 +348,7 @@ def loadData():
             pass
 
 def saveData():
+    #branch
     #CSV: current date and current weight
     inputtedDate = cal.entry.get()
     inputtedCurrentWeight = weightCurrentInput.get()
