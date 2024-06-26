@@ -358,30 +358,13 @@ def saveData():
 
     columnsExist = os.path.isfile("inputdata.csv")
     
-    actualDate = date.today()
-    stringDate = actualDate.strftime("%d/%m/%Y")
-
-    if not columnsExist:
-        with open("inputdata.csv", "w"):
-            pass
-
-    with open("inputdata.csv", "r") as csvfile:
-        dateParser = csv.DictReader(csvfile)
-        column = "date"
-        dates = []
-        print (type(dates))
-        for row in dateParser:
-            dates.append(row[column])
-        if stringDate in dates:
-            messagebox.showerror (title="Error", message="There is already an entry for today, please delete the existing entry to add another")
-        else:
-            with open("inputdata.csv", "a", newline="") as csvfile:   
-                columns = ["date", "weight", "calories"]
-                writer = csv.DictWriter(csvfile, fieldnames=columns)
-                if not columnsExist:
-                    writer.writeheader()
-                writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight, "calories" : inputtedDailyCalories})
-                csvfile.close()
+    with open("inputdata.csv", "a", newline="") as csvfile:
+        columns = ["date", "weight", "calories"]
+        writer = csv.DictWriter(csvfile, fieldnames=columns)
+        if not columnsExist:
+            writer.writeheader()
+        writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight, "calories" : inputtedDailyCalories})
+        csvfile.close()
     
                 #INI: target weight and preferred measurement
                 inputtedMeasurement = weightMeasurementInputted.get()
