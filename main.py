@@ -18,7 +18,6 @@ from datetime import datetime
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import simpledialog
-from datetime import date
 #from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
 #main
@@ -349,12 +348,10 @@ def loadData():
             pass
 
 def saveData():
-    #branch
     #CSV: current date and current weight
     inputtedDate = cal.entry.get()
     inputtedCurrentWeight = weightCurrentInput.get()
     inputtedDailyCalories = dailyCaloriesEntry.get()
-
 
     columnsExist = os.path.isfile("inputdata.csv")
     
@@ -366,20 +363,20 @@ def saveData():
         writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight, "calories" : inputtedDailyCalories})
         csvfile.close()
     
-                #INI: target weight and preferred measurement
-                inputtedMeasurement = weightMeasurementInputted.get()
-                desiredWeight = weightDesiredInput.get()
+    #INI: target weight and preferred measurement
+    inputtedMeasurement = weightMeasurementInputted.get()
+    desiredWeight = weightDesiredInput.get()
 
-                configuration = {
-                    "measurement" : inputtedMeasurement,
-                    "desiredWeight" : desiredWeight
-                }
-                config = configparser.ConfigParser()
-                config["Configuration"] = configuration
-                with open("config.ini", "w") as configfile:
-                    config.write(configfile)
-                verifyFields()
+    configuration = {
+        "measurement" : inputtedMeasurement,
+        "desiredWeight" : desiredWeight
+    }
+    config = configparser.ConfigParser()
+    config["Configuration"] = configuration
+    with open("config.ini", "w") as configfile:
+        config.write(configfile)
 
+    verifyFields()
     weightDesiredInput.delete(0, tk.END)
     weightCurrentInput.delete(0, tk.END)
     dailyCaloriesEntry.delete(0, tk.END)
