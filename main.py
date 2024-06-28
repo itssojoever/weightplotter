@@ -585,17 +585,5 @@ savePlotButton.grid(row=0, column=5)
 openStatisticsButton.grid(row=0, column=6)
 openInformationButton.grid(row=0, column=7)
 
-
-
-
-#Frame6
-#canvas1 = tk.Canvas(Frame6, width=1200, height=300)
-#vizualisation = tk.PhotoImage(file="weightplot.png")
-#canvas1.create_image(600, 20, image=vizualisation)
-
-#Frame6
-#Frame6.grid(row=5, column=0)
-#canvas1.grid(row=0, column=0)
-
 if __name__== "__main__":
     root.mainloop()
