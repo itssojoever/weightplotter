@@ -1,11 +1,3 @@
-'''Future additions? : Statistics page with maximum, minimum, average over last 30 days, last 7 days, etc; changeable option.
-                       Verification to ensure that there isn't more than one entry a day, or if there is plot the average of the entries
-                       Option to pick display and change line colours. Hex?
-                       Option to open all entries in a separate window; amend or delete as desired
-                       Protein
-
-    '''
-
 import tkinter as tk
 import csv
 import os
