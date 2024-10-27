@@ -33,6 +33,7 @@ defaultSettings = {
     #"alphalinecolour" : "#e02232",
     #"targetweightlinecolour" : "#073ae0",
     }
+
 settingsExist = os.path.isfile("plotSettings.ini")
 if not settingsExist:
     settingsConfig = configparser.ConfigParser()
@@ -266,7 +267,7 @@ def openInformation():
 
     informationWindow = ttk.Toplevel(root)
     informationWindow.resizable(True, True)
-    informationWindow.geometry("620x440")
+    informationWindow.geometry("620x520")
     informationWindow.title("Entries")
     informationWindow.iconname(None)
 
@@ -411,7 +412,7 @@ def verifyFields():
                         inputVerified = False
                         removeLastEntry("inputdata.csv")
 
-    if inputVerified == True and configVerified == True:
+    if inputVerified == True and configVerified:
         messagebox.showinfo(title="Successful!", message="Entry successfully saved")
 
 def removeLastEntry(csv_file):
@@ -461,8 +462,6 @@ def generatePlot():
         #alphaLineColour = settingsReader["Settings"]["alphalinecolour"]
         #targetWeightLineColour = settingsReader["Settings"]["targetweightlinecolour"]
  
-    else:
-        pass
     if os.path.isfile("inputdata.csv"):
         data = pd.read_csv("inputdata.csv", parse_dates=["date"])
         data["date"] = pd.to_datetime(data["date"])
