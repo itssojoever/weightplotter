@@ -484,15 +484,15 @@ def generatePlot():
     ax1.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
     plt.axhline(y=desiredWeight, linewidth=float(lineWidth), color="black", label="Target weight")
 
-    ax2 = ax1.twinx()
-    ax2.plot(date, calories_resampled, color="green", linewidth=float(lineWidth), label='Calories')
-    ax2.set_ylabel('Calories')
-    ax2.tick_params(axis='y')
+    #ax2 = ax1.twinx()
+    #ax2.plot(date, calories_resampled, color="green", linewidth=float(lineWidth), label='Calories')
+    #ax2.set_ylabel('Calories')
+    #ax2.tick_params(axis='y')
 
     ax1.set_ylim(min(weight_resampled) - lowerYPadding, max(weight_resampled) + upperYPadding)
     #calories_ticks = range(0, int(max(calories_resampled)) + 250, 250)
     #ax2.set_yticks(calories_ticks)
-    ax2.set_ylim(min(calories_resampled) - lowerYPadding*5, max(calories_resampled) + upperYPadding*5)
+    #ax2.set_ylim(min(calories_resampled) - lowerYPadding*5, max(calories_resampled) + upperYPadding*5)
     if legendToggle == "enabled":
         fig.legend(handlelength=3,loc=legendLoc)
     ax1.set_xlabel("Date")
@@ -537,9 +537,9 @@ l3 = ttk.Label(Frame1, font="helvetica, 12", text="Input target weight: ")
 weightDesiredInput = ttk.Entry(Frame1, font="helvetica, 12")
 
 l4 = ttk.Label(Frame1, font="Helvetica, 12", text="Input weight: ")
-l5 = ttk.Label(Frame1, font="Helvetica, 12", text="Input daily calories: ")
+#l5 = ttk.Label(Frame1, font="Helvetica, 12", text="Input daily calories: ")
 weightCurrentInput = ttk.Entry(Frame1, font="helvetica, 12")
-dailyCaloriesEntry = ttk.Entry(Frame1, font="helvetica, 12")
+#dailyCaloriesEntry = ttk.Entry(Frame1, font="helvetica, 12")
 
 #Buttons
 saveButton = ttk.Button(Frame1, text="Save entry", command=lambda: saveData())
@@ -564,8 +564,8 @@ weightDesiredInput.grid(row=5, column=0)
 
 l4.grid(row=6, column=0)
 weightCurrentInput.grid(row=7, column=0)
-l5.grid(row=8, column=0)
-dailyCaloriesEntry.grid(row=9, column=0)
+#l5.grid(row=8, column=0)
+#dailyCaloriesEntry.grid(row=9, column=0)
 saveButton.grid(row=10, column=0, pady=8)
 
 removeLastEntryButton.grid(row=0, column=1)
