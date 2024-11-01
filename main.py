@@ -344,7 +344,7 @@ def saveData():
     #CSV: current date and current weight
     inputtedDate = cal.entry.get()
     inputtedCurrentWeight = weightCurrentInput.get()
-    inputtedDailyCalories = dailyCaloriesEntry.get()
+    #inputtedDailyCalories = dailyCaloriesEntry.get()
 
     columnsExist = os.path.isfile("inputdata.csv")
     
@@ -353,7 +353,8 @@ def saveData():
         writer = csv.DictWriter(csvfile, fieldnames=columns)
         if not columnsExist:
             writer.writeheader()
-        writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight, "calories" : inputtedDailyCalories})
+        writer.writerow({"date": inputtedDate, "weight": inputtedCurrentWeight}), 
+                         #"calories" : inputtedDailyCalories})
         csvfile.close()
     
     #INI: target weight and preferred measurement
@@ -372,7 +373,7 @@ def saveData():
     verifyFields()
     weightDesiredInput.delete(0, tk.END)
     weightCurrentInput.delete(0, tk.END)
-    dailyCaloriesEntry.delete(0, tk.END)
+    #dailyCaloriesEntry.delete(0, tk.END)
 
 def verifyFields():
     #config.ini
